@@ -1,2 +1,2 @@
-# RESTful-Web-Services-with-ASP.NET-Core-7
-RESTful Web Services with ASP.NET Core 7, published by Packt
+# RESTful-Web-Services-with-ASP.NET-Core-8
+RESTful Web Services with ASP.NET Core 8, published by Packt
