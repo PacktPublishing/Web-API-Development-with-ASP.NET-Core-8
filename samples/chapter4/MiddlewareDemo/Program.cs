@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.Extensions.Logging;
 using MiddlewareDemo;
-using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,10 +124,10 @@ var app = builder.Build();
 //        await next();
 //    });
 //});
-app.Run(async context =>
-{
-    await context.Response.WriteAsync("Hello world!");
-});
+//app.Run(async context =>
+//{
+//    await context.Response.WriteAsync("Hello world!");
+//});
 
 // This example is to enable the rate-limiting middleware.
 // app.UseRateLimiter(new RateLimiterOptions()

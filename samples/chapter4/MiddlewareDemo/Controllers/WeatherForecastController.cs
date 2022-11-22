@@ -22,7 +22,9 @@ public class WeatherForecastController : ControllerBase
     public IEnumerable<WeatherForecast> Get()
     {
         // Get the "X-Correlation-Id" header from the request
-        var correlationId = Request.Headers["X-Correlation-Id"];
+        var correlationId = Request.Headers["X-Correlation-Id"].FirstOrDefault();
+        // Log the correlation ID
+        _logger.LogInformation("Handling the request. CorrelationId: {CorrelationId}", correlationId);
         // Call another service with the same "X-Correlation-Id" header when you set up the HttpClient
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
