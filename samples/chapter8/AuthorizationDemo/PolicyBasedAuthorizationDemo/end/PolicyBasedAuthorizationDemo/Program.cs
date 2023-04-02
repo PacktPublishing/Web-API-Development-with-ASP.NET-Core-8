@@ -47,14 +47,14 @@ builder.Services.AddAuthentication(options =>
 // Use the policy syntax to add authorization
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(AppAuthorizationPolicies.PremiumContent, policy =>
+    options.AddPolicy(AppAuthorizationPolicies.SpecialPremiumContent, policy =>
     {
-        policy.Requirements.Add(new PremiumContentRequirement("New Zealand"));
+        policy.Requirements.Add(new SpecialPremiumContentRequirement("New Zealand"));
     });
     options.InvokeHandlersAfterFailure = false;
 });
 
-builder.Services.AddSingleton<IAuthorizationHandler, PremiumContentAuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, SpecialPremiumContentAuthorizationHandler>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
