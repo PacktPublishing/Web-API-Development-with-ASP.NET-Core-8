@@ -191,23 +191,25 @@ namespace BasicEfCoreDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!InvoiceExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // The below code will update all the fields
+            //_context.Entry(invoice).State = EntityState.Modified;
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!InvoiceExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
+            // The below code will update only the fields that have changed
             // var invoiceToUpdate = await _context.Invoices.FindAsync(id);
             // if (invoiceToUpdate == null)
             // {
@@ -221,7 +223,27 @@ namespace BasicEfCoreDemo.Controllers
             // invoiceToUpdate.DueDate = invoice.DueDate;
             // invoiceToUpdate.Status = invoice.Status;
 
-            await _context.SaveChangesAsync();
+            // A better way to update only the fields that have changed
+            var invoiceToUpdate = await _context.Invoices.FindAsync(id);
+            if (invoiceToUpdate == null)
+            {
+                return NotFound();
+            }
+            // Update only the properties that have changed
+            _context.Entry(invoiceToUpdate).CurrentValues.SetValues(invoice);
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!InvoiceExists(id))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
 
             return NoContent();
         }

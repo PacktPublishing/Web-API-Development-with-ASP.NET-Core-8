@@ -15,7 +15,7 @@ public class InvoiceDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Invoice>().HasData(
-            new Invoice 
+            new Invoice
             {
                 Id = Guid.NewGuid(),
                 InvoiceNumber = "INV-001",
@@ -65,6 +65,6 @@ public class InvoiceDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        //optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     }
 }
