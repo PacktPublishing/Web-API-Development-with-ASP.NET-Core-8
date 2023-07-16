@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcDemo";
+
+service RandomNumbers {
+  rpc GetRandomNumbers(GetRandomNumbersRequest) returns (stream GetRandomNumbersResponse);
+  rpc SendRandomNumbers(stream SendRandomNumbersRequest) returns (SendRandomNumbersResponse);
+}
+
+message GetRandomNumbersRequest {
+  int32 min = 1;
+  int32 max = 2;
+  int32 count = 3;
+}
+
+message GetRandomNumbersResponse {
+  int32 number = 1;
+}
+
+message SendRandomNumbersRequest {
+  int32 number = 1;
+}
+
+message SendRandomNumbersResponse {
+  int32 count = 1;
+  int32 sum = 2;
+}
+
+message ChatMessage {
+  string sender = 1;
+  string message = 2;
+}
+
+service Chat {
+  rpc SendMessage(stream ChatMessage) returns (stream ChatMessage);
+}

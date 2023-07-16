@@ -1,0 +1,75 @@
+syntax = "proto3";
+import "google/protobuf/duration.proto";  
+import "google/protobuf/timestamp.proto";
+
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "GrpcDemo";
+
+service Invoice {
+  rpc CreateAddress(CreateAddressRequest) returns (ActionReply);
+  rpc AddInvoiceItem(AddInvoiceItemRequest) returns (ActionReply);
+  rpc UpdateInvoiceDueDate(UpdateInvoiceDueDateRequest) returns (ActionReply);
+}
+
+service Contact {
+  rpc CreateContact(CreateContactRequest) returns (CreateContactResponse);
+}
+
+message ActionReply {
+  bool success = 1;
+  string message = 2;
+}
+
+enum InvoiceStatus {
+  INVOICE_STATUS_UNKNOWN = 0;
+  INVOICE_STATUS_DRAFT = 1;
+  INVOICESTATUS_AWAIT_PAYMENT = 2;
+  INVOICE_STATUS_PAID = 3;
+  INVOICE_STATUS_OVERDUE = 4;
+}
+
+message CreateAddressRequest {
+  string street = 1;
+  string city = 2;
+  string state = 3;
+  string zip_code = 4;
+  string country = 5;
+}
+
+message CreateContactRequest {
+  string first_name = 1;
+  string last_name = 2;
+  string email = 3;
+  string phone = 4;
+  int32 year_of_birth = 5;
+  bool is_active = 6;
+}
+
+message CreateContactResponse {
+  string contact_id = 1;
+}
+
+message UpdateBatchInvoicesStatusRequest {
+	repeated string invoice_ids = 1;
+	InvoiceStatus status = 2;
+}
+
+message UpdateInvoicesStatusRequest {
+  map<string, InvoiceStatus> invoice_status_map = 1;
+}
+
+message AddInvoiceItemRequest {
+  string name = 1;
+  string description = 2;
+  google.protobuf.DoubleValue unit_price = 3;
+  google.protobuf.Int32Value quantity = 4;
+  google.protobuf.BoolValue is_taxable = 5;
+}
+
+message UpdateInvoiceDueDateRequest {
+  string invoice_id = 1;
+  google.protobuf.Timestamp due_date = 2;
+  google.protobuf.Duration grace_period = 3;
+}
+

@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Net.Client" Version="2.55.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.22.0-rc2" />
+    <PackageReference Include="Grpc.Tools" Version="2.56.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\greet.proto" GrpcServices="Client" OutputDir="Generated"/>
+		<Protobuf Include="Protos\invoice.proto" GrpcServices="Client"  OutputDir="Generated"/>
+		<Protobuf Include="Protos\demo.proto" GrpcServices="Client"  OutputDir="Generated"/>
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Update="Protos\demo.proto">
+      <GrpcServices>Server</GrpcServices>
+      <OutputDir>Generated</OutputDir>
+    </None>
+    <None Update="Protos\greet.proto">
+      <GrpcServices>Server</GrpcServices>
+      <OutputDir>Generated</OutputDir>
+    </None>
+    <None Update="Protos\invoice.proto">
+      <GrpcServices>Server</GrpcServices>
+      <OutputDir>Generated</OutputDir>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generated\Protos\" />
+  </ItemGroup>
+
+</Project>
