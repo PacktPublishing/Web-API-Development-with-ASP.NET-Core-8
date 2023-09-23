@@ -1,0 +1,36 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: Docker build and push
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  docker_build_and_push:
+
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Login to Azure Container Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: devopscrlab.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    - name: Push to Azure Container Registry
+      run: |
+        docker build -f ${{ github.workspace }}/src/MyBasicWebApiDemo/Dockerfile -t devopscrlab.azurecr.io/myazurepipelinesdemo:${{ github.run_id }} -t devopscrlab.azurecr.io/myazurepipelinesdemo:latest .
+        docker push devopscrlab.azurecr.io/myazurepipelinesdemo:${{ github.run_id }}
+        docker push devopscrlab.azurecr.io/myazurepipelinesdemo:latest
+    

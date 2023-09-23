@@ -1,0 +1,48 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  azureSubscription: 'Microsoft Azure Sponsorship(76760d52-2d57-4b56-9ba6-f0f5044f60a6)'
+  webAppName: 'azure-pipeline-demo'
+
+steps:
+- task: AzureAppServiceSettings@1
+  displayName: Update settings
+  inputs:
+    azureSubscription: $(azureSubscription)
+    appName: $(webAppName)
+    resourceGroupName: 'devops-lab'
+    appSettings: |
+      [
+        {
+          "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+          "value": "devopscrlab",
+          "slotSetting": false
+        },
+        {
+          "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+          "value": "$(acrpassword)",
+          "slotSetting": false
+        }
+      ]
+- task: AzureRmWebAppDeployment@4
+  displayName: Deploy to Web App container
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: $(azureSubscription)
+    appType: 'webAppContainer'
+    WebAppName: $(webAppName)
+    DockerNamespace: 'devopscrlab.azurecr.io'
+    DockerRepository: 'myazurepipelinesdemo'
+    DockerImageTag: 'latest'
+    StartupCommand: 'dotnet MyBasicWebApiDemo.dll'
+
