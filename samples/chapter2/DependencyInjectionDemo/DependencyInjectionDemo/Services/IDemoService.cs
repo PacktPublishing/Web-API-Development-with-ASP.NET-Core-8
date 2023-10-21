@@ -2,6 +2,6 @@
 
 public interface IDemoService
 {
-    public string SayHello();
+    string SayHello();
 }
 

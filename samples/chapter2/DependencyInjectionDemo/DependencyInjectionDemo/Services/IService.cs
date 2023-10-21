@@ -2,7 +2,7 @@
 
 public interface IService
 {
-    public string Name { get; }
-    public string SayHello();
+    string Name { get; }
+    string SayHello();
 }
 
