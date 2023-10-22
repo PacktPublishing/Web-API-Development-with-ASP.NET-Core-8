@@ -1,3 +1,9 @@
+using System.Net;
+using System.Threading.RateLimiting;
+
+using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.AspNetCore.RateLimiting;
+
 using MiddlewareDemo;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +15,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add the rate limiting middleware
+builder.Services.AddRateLimiter(_ =>
+    _.AddFixedWindowLimiter(policyName: "fixed", options =>
+        {
+            options.PermitLimit = 5;
+            options.Window = TimeSpan.FromSeconds(10);
+            options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+            options.QueueLimit = 2;
+        }));
+
+// Add the request timeout middleware
+//builder.Services.AddRequestTimeouts();
+builder.Services.AddRequestTimeouts(option =>
+{
+    option.DefaultPolicy = new RequestTimeoutPolicy { Timeout = TimeSpan.FromSeconds(5) };
+    option.AddPolicy("ShortTimeoutPolicy", TimeSpan.FromSeconds(2));
+    option.AddPolicy("LongTimeoutPolicy", TimeSpan.FromSeconds(10));
+});
+
+
 var app = builder.Build();
+
+// This example is to enable the short-circuit middleware.
+// The short-circuit middleware should be placed before other middleware components.
+//app.MapGet("robots.txt", () => Results.Content("User-agent: *\nDisallow: /", "text/plain")).ShortCircuit();
+app.MapShortCircuit((int)HttpStatusCode.NotFound, "robots.txt", "favicon.ico");
 
 // This is a terminal middleware. It can short-circuit the pipeline because it does not call the `next()` method.
 // app.Run(async context =>
@@ -18,19 +49,19 @@ var app = builder.Build();
 // });
 
 // This is a simple middleware that outputs the Host URL and the response status code.
-//app.Use(async (context, next) =>
-//{
+// app.Use(async (context, next) =>
+// {
 //    var logger = app.Services.GetRequiredService<ILogger<Program>>();
 //    logger.LogInformation($"Request Host: {context.Request.Host}");
 //    logger.LogInformation("My Middleware - Before");
 //    await next(context);
 //    logger.LogInformation("My Middleware - After");
 //    logger.LogInformation($"Response StatusCode: {context.Response.StatusCode}");
-//});
+// });
 
 // This is to show how to use the `next()` method to call the next middleware in the pipeline.
-//app.Use(async (context, next) =>
-//{
+// app.Use(async (context, next) =>
+// {
 //    var logger = app.Services.GetRequiredService<ILogger<Program>>();
 //    logger.LogInformation($"ClientName HttpHeader in Middleware 1: {context.Request.Headers["ClientName"]}");
 //    logger.LogInformation($"Add a ClientName HttpHeader in Middleware 1");
@@ -39,10 +70,10 @@ var app = builder.Build();
 //    await next(context);
 //    logger.LogInformation("My Middleware 1 - After");
 //    logger.LogInformation($"Response StatusCode in Middleware 1: {context.Response.StatusCode}");
-//});
+// });
 
-//app.Use(async (context, next) =>
-//{
+// app.Use(async (context, next) =>
+// {
 //    var logger = app.Services.GetRequiredService<ILogger<Program>>();
 //    logger.LogInformation($"ClientName HttpHeader in Middleware 2: {context.Request.Headers["ClientName"]}");
 //    logger.LogInformation("My Middleware 2 - Before");
@@ -50,7 +81,7 @@ var app = builder.Build();
 //    await next(context);
 //    logger.LogInformation("My Middleware 2 - After");
 //    logger.LogInformation($"Response StatusCode in Middleware 2: {context.Response.StatusCode}");
-//});
+// });
 
 // This is an example showing how to combine multiple middleware components into a single middleware component.
 // app.Map("/lottery", app =>
@@ -130,17 +161,9 @@ var app = builder.Build();
 //});
 
 // This example is to enable the rate-limiting middleware.
-// app.UseRateLimiter(new RateLimiterOptions()
-//    .AddFixedWindowLimiter(policyName: "fixed",
-//        options =>
-//        {
-//            options.PermitLimit = 5;
-//            options.Window = TimeSpan.FromSeconds(10);
-//            options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-//            options.QueueLimit = 2;
-//        }));
+app.UseRateLimiter();
 
-//app.MapGet("/", () => Results.Ok($"Hello {DateTime.Now.Ticks.ToString()}")).RequireRateLimiting("fixed");
+app.MapGet("/rate-limiting-mini", () => Results.Ok($"Hello {DateTime.Now.Ticks.ToString()}")).RequireRateLimiting("fixed");
 
 // This is an example of custom middleware.
 app.UseCorrelationId();
@@ -156,5 +179,26 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// This example is to enable the request timeout middleware.
+app.UseRequestTimeouts();
+
+app.MapGet("/request-timeout-mini", async (HttpContext context, ILogger<Program> logger) =>
+{
+    var random = new Random();
+    var delay = random.Next(1, 10);
+    logger.LogInformation($"Delaying for {delay} seconds");
+    try
+    {
+        await Task.Delay(TimeSpan.FromSeconds(delay), context.RequestAborted);
+    }
+    catch
+    {
+        logger.LogWarning("The request timed out");
+        return Results.Content("The request timed out", "text/plain");
+    }
+
+    return Results.Content($"Hello! The task is complete in {delay} seconds", "text/plain");
+}).WithRequestTimeout(TimeSpan.FromSeconds(5));
 
 app.Run();
