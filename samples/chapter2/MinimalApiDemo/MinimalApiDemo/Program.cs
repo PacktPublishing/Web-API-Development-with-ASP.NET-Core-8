@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 using MinimalApiDemo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,22 +83,22 @@ app.MapGet("/weatherforecast", () =>
 //}).WithName("DeletePost").WithOpenApi().WithTags("Posts");
 
 
-app.MapGet("/posts", async ([FromServices] IPostService postService) =>
+app.MapGet("/posts", async (IPostService postService) =>
 {
     var posts = await postService.GetPostsAsync();
     return posts;
 }).WithName("GetPosts").WithOpenApi().WithTags("Posts");
-app.MapGet("/posts/{id}", async ([FromServices] IPostService postService, int id) =>
+app.MapGet("/posts/{id}", async (IPostService postService, int id) =>
 {
     var post = await postService.GetPostAsync(id);
     return post == null ? Results.NotFound() : Results.Ok(post);
 }).WithName("GetPost").WithOpenApi().WithTags("Posts");
-app.MapPost("/posts", async ([FromServices] IPostService postService, Post post) =>
+app.MapPost("/posts", async (IPostService postService, Post post) =>
 {
     var createdPost = await postService.CreatePostAsync(post);
     return Results.Created($"/posts/{createdPost.Id}", createdPost);
 }).WithName("CreatePost").WithOpenApi().WithTags("Posts");
-app.MapPut("/posts/{id}", async ([FromServices] IPostService postService, int id, Post post) =>
+app.MapPut("/posts/{id}", async (IPostService postService, int id, Post post) =>
 {
     try
     {
@@ -112,7 +110,7 @@ app.MapPut("/posts/{id}", async ([FromServices] IPostService postService, int id
         return Results.NotFound();
     }
 }).WithName("UpdatePost").WithOpenApi().WithTags("Posts");
-app.MapDelete("/posts/{id}", async ([FromServices] IPostService postService, int id) =>
+app.MapDelete("/posts/{id}", async (IPostService postService, int id) =>
 {
     try
     {

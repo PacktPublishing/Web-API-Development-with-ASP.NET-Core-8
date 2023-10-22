@@ -18,7 +18,7 @@ public class PostsController : ControllerBase
         _postsService = new PostsService();
     }
 
-    [HttpGet("{id}")] // api/posts/1
+    [HttpGet("{id:int}")] // api/posts/1
     public async Task<ActionResult<Post>> GetPost(int id)
     {
         var post = await _postsService.GetPost(id);
