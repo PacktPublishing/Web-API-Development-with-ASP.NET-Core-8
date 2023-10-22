@@ -36,6 +36,7 @@ public class ConfigurationController : ControllerBase
     public ActionResult GetDatabaseConfigurationWithBind()
     {
         var databaseOption = new DatabaseOption();
+        // The `SectionName` is defined in the `DatabaseOption` class, which shows the section name in the `appsettings.json` file.
         _configuration.GetSection(DatabaseOption.SectionName).Bind(databaseOption);
         // You can also use the code below to achieve the same result
         // _configuration.Bind(DatabaseOption.SectionName, databaseOption);
