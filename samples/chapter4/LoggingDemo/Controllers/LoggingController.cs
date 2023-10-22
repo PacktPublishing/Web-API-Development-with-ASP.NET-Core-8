@@ -44,7 +44,7 @@ namespace LoggingDemo.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "This is an exception logging message. Datetime: {0}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                _logger.LogError(ex, "This is an exception logging message. Datetime: {exceptionDateTime}. Exception message: {exceptionMessage}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), ex.Message);
                 // throw;
             }
             return Ok("This is to test an exception.");
