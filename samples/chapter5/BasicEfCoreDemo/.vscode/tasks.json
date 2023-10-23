@@ -7,9 +7,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/BasicEfCoreDemo.csproj",
+                "${workspaceFolder}/BasicEfCoreDemo.sln",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -19,9 +19,9 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/BasicEfCoreDemo.csproj",
+                "${workspaceFolder}/BasicEfCoreDemo.sln",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/BasicEfCoreDemo.csproj"
+                "${workspaceFolder}/BasicEfCoreDemo.sln"
             ],
             "problemMatcher": "$msCompile"
         }
