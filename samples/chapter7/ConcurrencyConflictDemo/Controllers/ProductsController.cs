@@ -1,7 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ConcurrencyConflictDemo.Data;
 using ConcurrencyConflictDemo.Models;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConcurrencyConflictDemo.Controllers
 {
@@ -117,6 +118,7 @@ namespace ConcurrencyConflictDemo.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
+                // Do not forget to log the error
                 return Conflict($"Concurrency conflict for Product {product.Id}.");
             }
 
