@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace EfCoreRelationshipsDemo.Models;
+﻿namespace EfCoreRelationshipsDemo.Models;
 
 public class InvoiceItem
 {

@@ -1,5 +1,6 @@
 using EfCoreRelationshipsDemo.Data;
 using EfCoreRelationshipsDemo.Models;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -115,29 +116,29 @@ namespace EfCoreRelationshipsDemo.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id}/movies/")]
-        public async Task<IActionResult> AddMovie(Guid id, Guid moveId)
+        [HttpPost("{id}/movies/{movieId}")]
+        public async Task<IActionResult> AddMovie(Guid id, Guid movieId)
         {
             if (_context.Actors == null)
             {
-                return NotFound();
+                return NotFound("Actors is null.");
             }
 
-            var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
+            var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync(x => x.Id == id);
             if (actor == null)
             {
-                return NotFound();
+                return NotFound($"Actor with id {id} not found.");
             }
 
-            var movie = await _context.Movies.FindAsync(moveId);
+            var movie = await _context.Movies.FindAsync(movieId);
             if (movie == null)
             {
-                return NotFound();
+                return NotFound($"Movie with id {movieId} not found.");
             }
 
             if (actor.Movies.Any(x => x.Id == movie.Id))
             {
-                return Problem("Movie already exists.");
+                return Problem($"Movie with id {movieId} already exists for Actor {id}.");
             }
 
             actor.Movies.Add(movie);
@@ -151,13 +152,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         {
             if (_context.Actors == null)
             {
-                return NotFound();
+                return NotFound("Actors is null.");
             }
 
             var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
             if (actor == null)
             {
-                return NotFound();
+                return NotFound($"Actor with id {id} not found.");
             }
 
             return Ok(actor.Movies);
@@ -168,19 +169,19 @@ namespace EfCoreRelationshipsDemo.Controllers
         {
             if (_context.Actors == null)
             {
-                return NotFound();
+                return NotFound("Actors is null.");
             }
 
             var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
             if (actor == null)
             {
-                return NotFound();
+                return NotFound($"Actor with id {id} not found.");
             }
 
             var movie = await _context.Movies.FindAsync(movieId);
             if (movie == null)
             {
-                return NotFound();
+                return NotFound($"Movie with id {movieId} not found.");
             }
 
             actor.Movies.Remove(movie);
