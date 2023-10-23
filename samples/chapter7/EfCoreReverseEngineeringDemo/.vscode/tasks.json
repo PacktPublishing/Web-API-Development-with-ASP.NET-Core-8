@@ -7,9 +7,9 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/EfCoreReverseEngineeringDemo.csproj",
+                "${workspaceFolder}/EfCoreReverseEngineeringDemo.sln",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -19,9 +19,9 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/EfCoreReverseEngineeringDemo.csproj",
+                "${workspaceFolder}/EfCoreReverseEngineeringDemo.sln",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/EfCoreReverseEngineeringDemo.csproj"
+                "${workspaceFolder}/EfCoreReverseEngineeringDemo.sln"
             ],
             "problemMatcher": "$msCompile"
         }
