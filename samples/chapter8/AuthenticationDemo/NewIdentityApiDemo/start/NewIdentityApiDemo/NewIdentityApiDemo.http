@@ -1,0 +1,6 @@
+@NewIdentityApiDemo_HostAddress = http://localhost:5232
+
+GET {{NewIdentityApiDemo_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
