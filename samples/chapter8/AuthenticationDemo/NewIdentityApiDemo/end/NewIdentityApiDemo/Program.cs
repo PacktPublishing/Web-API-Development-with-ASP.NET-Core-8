@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 using NewIdentityApiDemo.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +16,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.MapGroup("/identity").MapIdentityApi<IdentityUser>();
+app.MapGroup("/identity").MapIdentityApi<AppUser>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
