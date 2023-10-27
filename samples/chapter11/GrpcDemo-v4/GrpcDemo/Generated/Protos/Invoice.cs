@@ -1559,7 +1559,7 @@ namespace GrpcDemo {
       if (other == null) {
         return;
       }
-      invoiceStatusMap_.Add(other.invoiceStatusMap_);
+      invoiceStatusMap_.MergeFrom(other.invoiceStatusMap_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
