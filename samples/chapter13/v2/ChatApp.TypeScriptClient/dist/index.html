@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+</head>
+<body>
+    <div id="divLogin">
+        <label for="txtUsername">User Name</label>
+        <input type="text" id="txtUsername" />
+        <label for="txtPassword">Password</label>
+        <input type="password" id="txtPassword" />
+        <input type="button" id="btnLogin" value="Login" />
+    </div>
+    <div id="divChat">
+        <label>User Name</label>
+        <label id="lblUsername" ></label>
+        <label for="txtToUser">To</label>
+        <input type="text" id="txtToUser" />
+        <label for="txtMessage">Message</label>
+        <input type="text" id="txtMessage" />
+        <input type="button" id="btnSend" value="Send" />
+        <ul id="messages"></ul>
+    </div>
+    <script type="module" src="bundle.js"></script>
+</body>
+</html>

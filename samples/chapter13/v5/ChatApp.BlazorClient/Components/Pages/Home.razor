@@ -1,0 +1,219 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.AspNetCore.Http.Connections
+@implements IAsyncDisposable
+@inject HttpClient Http
+<style>
+    /* Custom CSS for the scrollable list */
+    .scrollable-list {
+        max-height: 200px; /* Set the maximum height for the list */
+        overflow-y: auto; /* Enable vertical scrolling */
+    }
+</style>
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<div class="container mt-5">
+    <div class="col-md-6 offset-md-3">
+        @if (_showLogin)
+        {
+            <div class="form-group mb-3">
+                <label>User Name</label>
+                <input type="text" @bind="_username" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label>Password</label>
+                <input type="password" @bind="_password" class="form-control" />
+            </div>
+            <input type="button" value="Login" @onclick="Login" class="btn btn-primary btn-block mb-3" />
+        }
+
+        @if (_showChat)
+        {
+            <div class="form-group mb-3">
+                <label>User Name</label>
+                <lable><b>@_username</b></lable>
+            </div>
+            <div class="form-group mb-3">
+                <label>Status</label>
+                <lable>@_status</lable>
+            </div>
+            <div class="form-group mb-3">
+                <label>Group</label>
+                <input type="text" @bind="_group" readonly="@(IsConnected && _isJoinedGroup)" class="form-control" />
+            </div>
+            <button @onclick="JoinGroup" disabled="@(!IsConnected || _isJoinedGroup)" class="btn btn-primary btn-block mb-3">Join Group</button>
+            <button @onclick="LeaveGroup" disabled="@(!IsConnected || !_isJoinedGroup)" class="btn btn-primary btn-block mb-3">Leave Group</button>
+            <div class="form-group mb-3">
+                <label>To User</label>
+                <input type="text" @bind="_toUser" class="form-control" />
+            </div>
+            <div class="form-group mb-3">
+                <label>Message</label>
+                <input type="text" @bind="_message" class="form-control" />
+            </div>
+            <input type="button" value="Send" @onclick="SendMessage" disabled="@(!IsConnected)" class="btn btn-primary btn-block mt-3" />
+            <ul class="list-group mt-3 scrollable-list">
+                @foreach (var message in _messages)
+                {
+                    <li class="list-group-item">@message</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+
+    private bool _showLogin = true;
+    private bool _showChat = false;
+
+    private string? _username;
+    private string? _password;
+    private string? _token;
+    private string? _toUser;
+    private string? _group;
+    private bool _isJoinedGroup = false;
+    private string? _status;
+
+    private HubConnection? _hubConnection;
+    private readonly List<string> _messages = new();
+    private string? _message;
+    private bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
+
+    @* protected override async Task OnInitializedAsync()
+    {
+
+    } *@
+
+    private async Task Login()
+    {
+        if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+        {
+            var response = await Http.PostAsJsonAsync("Account/login", new { Username = _username, Password = _password });
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+                _token = data["token"];
+                if (string.IsNullOrWhiteSpace(_token))
+                {
+                    throw new Exception("Invalid token.");
+                }
+                _showLogin = false;
+                _showChat = true;
+                StateHasChanged();
+    // Set the token to the hub connection.
+                var builder = new HubConnectionBuilder()
+                    .WithUrl("https://localhost:7159/chatHub", options =>
+                    {
+                        options.Transports = HttpTransportType.WebSockets | HttpTransportType.LongPolling;
+                        options.AccessTokenProvider = () => Task.FromResult<string?>(_token);
+                    })
+    // .WithKeepAliveInterval(TimeSpan.FromSeconds(10))
+    // .WithServerTimeout(TimeSpan.FromSeconds(20))
+                    .WithAutomaticReconnect()
+                    //.WithAutomaticReconnect(new[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20) })
+                    .WithStatefulReconnect();
+                builder.Services.Configure<HubConnectionOptions>(options => options.StatefulReconnectBufferSize = 200000);
+                _hubConnection = builder.Build();
+    // _hubConnection.KeepAliveInterval = TimeSpan.FromSeconds(10);
+    // _hubConnection.ServerTimeout = TimeSpan.FromSeconds(20);
+                _hubConnection.On<string, string>("ReceiveMessage", (username, message) =>
+                {
+                    var encodedMessage = $"{username}: {message}";
+                    _messages.Add(encodedMessage);
+                    StateHasChanged();
+                });
+                _hubConnection.On<string>("UserConnected", (username) =>
+                {
+                    var encodedMessage = $"{username} connected.";
+                    _messages.Add(encodedMessage);
+                    StateHasChanged();
+                });
+
+                _hubConnection.On<string>("UserDisconnected", (username) =>
+                {
+                    var encodedMessage = $"{username} disconnected.";
+                    _messages.Add(encodedMessage);
+                    StateHasChanged();
+                });
+
+                _hubConnection.Closed += (error) =>
+                {
+                    _status = $"Connection closed. {error?.Message}";
+                    return Task.CompletedTask;
+                };
+
+                _hubConnection.Reconnecting += (error) =>
+                {
+                    _status = $"Reconnecting. {error?.Message}";
+                    return Task.CompletedTask;
+                };
+
+                _hubConnection.Reconnected += (connectionId) =>
+                {
+                    _status = $"Reconnected. {connectionId}";
+                    return Task.CompletedTask;
+                };
+
+                await _hubConnection.StartAsync();
+                _status = $"Connected. {_hubConnection.ConnectionId}";
+            }
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (_hubConnection != null && IsConnected)
+        {
+            if (!string.IsNullOrWhiteSpace(_group) && _isJoinedGroup)
+            {
+                await _hubConnection.InvokeAsync("SendMessageToGroup", _username, _group, _message);
+            }
+            else if (!string.IsNullOrWhiteSpace(_toUser))
+            {
+                await _hubConnection.InvokeAsync("SendMessageToUser", _username, _toUser, _message);
+            }
+            else
+            {
+                await _hubConnection.InvokeAsync("SendMessage", _username, _message);
+            }
+            _message = string.Empty;
+        }
+    }
+
+    private async Task JoinGroup()
+    {
+        if (_hubConnection != null && IsConnected)
+        {
+            if (!string.IsNullOrWhiteSpace(_group))
+            {
+                await _hubConnection.InvokeAsync("AddToGroup", _username, _group);
+                _isJoinedGroup = true;
+            }
+        }
+    }
+
+    private async Task LeaveGroup()
+    {
+        if (_hubConnection != null && IsConnected)
+        {
+            if (!string.IsNullOrWhiteSpace(_group))
+            {
+                await _hubConnection.InvokeAsync("RemoveFromGroup", _username, _group);
+                _isJoinedGroup = false;
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+}

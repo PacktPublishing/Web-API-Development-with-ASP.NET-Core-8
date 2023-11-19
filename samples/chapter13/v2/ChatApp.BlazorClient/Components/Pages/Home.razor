@@ -1,0 +1,146 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@if (_showLogin)
+{
+    <div>
+        <label>User Name</label>
+        <input type="text" @bind="_username" />
+    </div>
+    <div>
+        <label>Password</label>
+        <input type="password" @bind="_password" />
+    </div>
+    <input type="button" value="Login" @onclick="Login" />
+}
+
+@if (_showChat)
+{
+    <div>
+        <label>User Name</label>
+        <lable><b>@_username</b></lable>
+    </div>
+    <div>
+        <label>To User</label>
+        <input type="text" @bind="_toUser" />
+    </div>
+    <div>
+        <label>Message</label>
+        <input type="text" @bind="_message" />
+    </div>
+    <input type="button" value="Send" @onclick="SendMessage" disabled="@(!IsConnected)" />
+    <ul>
+        @foreach (var message in _messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+}
+
+@code {
+
+    private bool _showLogin = true;
+    private bool _showChat = false;
+
+    private string? _username;
+    private string? _password;
+    private string? _token;
+    private string? _toUser;
+
+    private HubConnection? _hubConnection;
+    private readonly List<string> _messages = new();
+    private string? _message;
+    private bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
+
+    @* protected override async Task OnInitializedAsync()
+    {
+
+    } *@
+
+    private async Task Login()
+    {
+        if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+        {
+            var response = await Http.PostAsJsonAsync("Account/login", new { Username = _username, Password = _password });
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+                _token = data["token"];
+                if (string.IsNullOrWhiteSpace(_token))
+                {
+                    throw new Exception("Invalid token.");
+                }
+                else
+                {
+                    _showLogin = false;
+                    _showChat = true;
+                    StateHasChanged();
+
+                    // Set the token to the hub connection.
+                    _hubConnection = new HubConnectionBuilder()
+                    .WithUrl("https://localhost:7159/chatHub", options =>
+                    {
+                        options.AccessTokenProvider = () => Task.FromResult<string?>(_token);
+                    })
+                    .Build();
+
+                    _hubConnection.On<string, string>("ReceiveMessage", (username, message) =>
+                    {
+                        var encodedMessage = $"{username}: {message}";
+                        _messages.Add(encodedMessage);
+                        StateHasChanged();
+                    });
+
+                    _hubConnection.On<string>("UserConnected", (username) =>
+                    {
+                        var encodedMessage = $"{username} connected.";
+                        _messages.Add(encodedMessage);
+                        StateHasChanged();
+                    });
+
+                    _hubConnection.On<string>("UserDisconnected", (username) =>
+                    {
+                        var encodedMessage = $"{username} disconnected.";
+                        _messages.Add(encodedMessage);
+                        StateHasChanged();
+                    });
+
+                    await _hubConnection.StartAsync();
+                }
+            }
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (_hubConnection != null && IsConnected)
+        {
+            if (!string.IsNullOrWhiteSpace(_toUser))
+            {
+                await _hubConnection.InvokeAsync("SendMessageToUser", _username, _toUser, _message);
+            }
+            else
+            {
+                await _hubConnection.InvokeAsync("SendMessage", _username, _message);
+            }
+            _message = string.Empty;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+}

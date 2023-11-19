@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+        /* Custom CSS for the scrollable list */
+        .scrollable-list {
+            max-height: 200px; /* Set the maximum height for the list */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+    </style>
+    <title>Chat App</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="col-md-6 offset-md-3">
+        <div id="divLogin">
+          <div class="form-group mb-3">
+            <label for="txtUsername">User Name</label>
+            <input type="text" id="txtUsername" class="form-control" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="txtPassword">Password</label>
+            <input type="password" id="txtPassword" class="form-control" />
+          </div>
+          <button id="btnLogin" class="btn btn-primary btn-block mt-3">
+            Login
+          </button>
+        </div>
+        <div id="divChat">
+          <div class="form-group mb-3">
+            <label>User Name</label>
+            <label id="lblUsername"></label>
+          </div>
+          <div class="form-group mb-3">
+            <label id="lblToGroup">Group</label>
+            <input type="text" id="txtToGroup" class="form-control" />
+          </div>
+          <button id="btnJoinGroup" class="btn btn-primary btn-block mt-3">
+            Join Group
+          </button>
+          <button id="btnLeaveGroup" class="btn btn-primary btn-block mt-3">
+            Leave Group
+          </button>
+          <div class="form-group mb-3">
+            <label for="txtToUser">To</label>
+            <input type="text" id="txtToUser" class="form-control" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="txtMessage">Message</label>
+            <input type="text" id="txtMessage" class="form-control" />
+          </div>
+          <button id="btnSend" class="btn btn-primary btn-block mt-3">
+            Send
+          </button>
+          <ul id="messages" class="list-group mt-3 scrollable-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="bundle.js"></script>
+  </body>
+</html>
