@@ -4,12 +4,8 @@ using SchoolManagement.Models;
 
 namespace SchoolManagement.Data;
 
-public class AppDbContext : DbContext
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Teacher> Teachers => Set<Teacher>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Group> Groups => Set<Group>();

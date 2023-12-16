@@ -6,7 +6,7 @@ namespace SchoolManagement.GraphQL.Filters;
 
 public class StudentFilterType : FilterInputType<Student>
 {
-    override protected void Configure(IFilterInputTypeDescriptor<Student> descriptor)
+    protected override void Configure(IFilterInputTypeDescriptor<Student> descriptor)
     {
         descriptor.BindFieldsExplicitly();
         descriptor.Field(t => t.Id);
