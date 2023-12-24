@@ -8,7 +8,7 @@ namespace MyWebApiDemo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class UsersController(IValidator<User> validator) : ControllerBase
 {
     private static readonly List<User> Users = new()
     {
@@ -50,13 +50,6 @@ public class UsersController : ControllerBase
         }
     };
 
-    private readonly IValidator<User> _validator;
-
-    public UsersController(IValidator<User> validator)
-    {
-        _validator = validator;
-    }
-
     [HttpGet]
     public ActionResult<List<User>> Get()
     {
@@ -79,7 +72,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> Post(User user)
     {
-        var validationResult = await _validator.ValidateAsync(user);
+        var validationResult = await validator.ValidateAsync(user);
         if (!validationResult.IsValid)
         {
             return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));

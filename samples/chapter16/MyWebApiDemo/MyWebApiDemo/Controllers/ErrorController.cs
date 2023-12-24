@@ -5,13 +5,8 @@ namespace MyWebApiDemo.Controllers;
 
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
-public class ErrorController : ControllerBase
+public class ErrorController(ILogger<ErrorController> logger) : ControllerBase
 {
-    private readonly ILogger<ErrorController> _logger;
-
-    public ErrorController(ILogger<ErrorController> logger) =>
-        _logger = logger;
-
     [Route("/error-development")]
     public IActionResult HandleErrorDevelopment(
         [FromServices] IHostEnvironment hostEnvironment)
@@ -24,7 +19,7 @@ public class ErrorController : ControllerBase
         var exceptionHandlerFeature =
             HttpContext.Features.Get<IExceptionHandlerFeature>()!;
 
-        _logger.LogError(exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
+        logger.LogError(exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
 
         return Problem(
             detail: exceptionHandlerFeature.Error.StackTrace,
@@ -36,7 +31,7 @@ public class ErrorController : ControllerBase
     {
         var exceptionHandlerFeature =
             HttpContext.Features.Get<IExceptionHandlerFeature>()!;
-        _logger.LogError(exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
+        logger.LogError(exceptionHandlerFeature.Error, exceptionHandlerFeature.Error.Message);
         return Problem();
     }
 }

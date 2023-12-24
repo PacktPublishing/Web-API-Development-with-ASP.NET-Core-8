@@ -2,15 +2,9 @@
 
 namespace MyWebApiDemo.HealthChecks;
 
-public class OtherService2HealthCheck : IHealthCheck
+public class OtherService2HealthCheck(IHttpClientFactory httpClientFactory) : IHealthCheck
 {
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly Random _random = new();
-
-    public OtherService2HealthCheck(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
 
 
     public async Task<HealthCheckResult> CheckHealthAsync(
@@ -22,7 +16,7 @@ public class OtherService2HealthCheck : IHealthCheck
         {
             return HealthCheckResult.Unhealthy("A unhealthy result.");
         }
-        var client = _httpClientFactory.CreateClient("JsonPlaceholder");
+        var client = httpClientFactory.CreateClient("JsonPlaceholder");
         var response = await client.GetAsync("users", cancellationToken);
         return response.IsSuccessStatusCode
             ? HealthCheckResult.Healthy("A healthy result.")

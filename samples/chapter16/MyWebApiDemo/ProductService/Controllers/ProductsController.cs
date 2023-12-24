@@ -7,18 +7,13 @@ namespace ProductService.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ProductsController : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
-    private readonly IProductService _productService;
-
-    public ProductsController(IProductService productService) =>
-        _productService = productService;
-
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Product>>> Get()
     {
-        var products = await _productService.GetProductsAsync();
+        var products = await productService.GetProductsAsync();
         return Ok(products);
     }
 
@@ -27,7 +22,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> Get(int id)
     {
-        var product = await _productService.GetProductAsync(id);
+        var product = await productService.GetProductAsync(id);
         if (product == null)
         {
             return NotFound();
@@ -43,7 +38,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            var newProduct = await _productService.CreateProductAsync(product);
+            var newProduct = await productService.CreateProductAsync(product);
             return CreatedAtAction(nameof(Get), new { id = newProduct.Id }, newProduct);
         }
         catch (Exception ex)
@@ -62,14 +57,14 @@ public class ProductsController : ControllerBase
             return BadRequest("Product id mismatch.");
         }
 
-        if (await _productService.GetProductAsync(id) == null)
+        if (await productService.GetProductAsync(id) == null)
         {
             return NotFound();
         }
 
         try
         {
-            var updatedProduct = await _productService.UpdateProductAsync(product);
+            var updatedProduct = await productService.UpdateProductAsync(product);
             return Ok(updatedProduct);
         }
         catch (Exception ex)
@@ -85,7 +80,7 @@ public class ProductsController : ControllerBase
     {
         try
         {
-            await _productService.DeleteProductAsync(id);
+            await productService.DeleteProductAsync(id);
             return NoContent();
         }
         catch (Exception ex)
