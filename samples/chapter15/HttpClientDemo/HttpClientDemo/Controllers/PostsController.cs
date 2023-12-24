@@ -1,27 +1,18 @@
-﻿using System.Text;
-using System.Text.Json;
-
-using HttpClientDemo.Models;
-
+﻿using HttpClientDemo.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
 
 namespace HttpClientDemo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PostsController : ControllerBase
+public class PostsController(IHttpClientFactory httpClientFactory) : ControllerBase
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public PostsController(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var httpClient = _httpClientFactory.CreateClient("JsonPlaceholder");
+        var httpClient = httpClientFactory.CreateClient("JsonPlaceholder");
 
         // Use a httpRequestMessage object
         //var httpRequestMessage = new HttpRequestMessage
@@ -43,7 +34,7 @@ public class PostsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id)
     {
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var response = await httpClient.GetAsync($"posts/{id}");
         var content = await response.Content.ReadAsStringAsync();
         var post = JsonSerializer.Deserialize<Post>(content);
@@ -57,7 +48,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(Post post)
     {
-        var httpClient = _httpClientFactory.CreateClient("JsonPlaceholder");
+        var httpClient = httpClientFactory.CreateClient("JsonPlaceholder");
         var json = JsonSerializer.Serialize(post);
         var data = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await httpClient.PostAsync("posts", data);
@@ -69,7 +60,7 @@ public class PostsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Put(int id, Post post)
     {
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var json = JsonSerializer.Serialize(post);
         var data = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await httpClient.PutAsync($"posts/{id}", data);
@@ -81,7 +72,7 @@ public class PostsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var httpClient = _httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         var response = await httpClient.DeleteAsync($"posts/{id}");
         response.EnsureSuccessStatusCode();
         return NoContent();

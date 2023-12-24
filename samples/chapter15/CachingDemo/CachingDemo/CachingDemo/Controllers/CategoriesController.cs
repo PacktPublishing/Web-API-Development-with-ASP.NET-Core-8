@@ -8,15 +8,8 @@ namespace CachingDemo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CategoriesController : ControllerBase
+public class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-
-    public CategoriesController(ICategoryService categoryService)
-    {
-        _categoryService = categoryService;
-    }
-
     /// <summary>
     /// This method returns all categories.
     /// The response of this endpoint is cached for 60 seconds on client-side.
@@ -26,7 +19,7 @@ public class CategoriesController : ControllerBase
     [ResponseCache(Duration = 60)]
     public async Task<ActionResult<IEnumerable<Category>>> Get()
     {
-        var result = await _categoryService.GetCategoriesAsync();
+        var result = await categoryService.GetCategoriesAsync();
         return Ok(result);
     }
 
@@ -36,7 +29,7 @@ public class CategoriesController : ControllerBase
     {
         try
         {
-            var result = await _categoryService.GetFavoritesCategoriesAsync(userId);
+            var result = await categoryService.GetFavoritesCategoriesAsync(userId);
             return Ok(result);
         }
         catch (Exception ex)
@@ -50,7 +43,7 @@ public class CategoriesController : ControllerBase
     [OutputCache(PolicyName = "Expire600")]
     public async Task<ActionResult<Category?>> Get(int id)
     {
-        var result = await _categoryService.GetCategoryAsync(id);
+        var result = await categoryService.GetCategoryAsync(id);
         if (result is null)
         {
             return NotFound();
@@ -61,29 +54,29 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public Task<Category> Post(Category category)
     {
-        return _categoryService.AddCategoryAsync(category);
+        return categoryService.AddCategoryAsync(category);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<Category?>> Put(int id, Category category)
     {
-        var existingCategory = await _categoryService.GetCategoryAsync(id);
+        var existingCategory = await categoryService.GetCategoryAsync(id);
         if (existingCategory is null)
         {
             return NotFound();
         }
-        return await _categoryService.UpdateCategoryAsync(category);
+        return await categoryService.UpdateCategoryAsync(category);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult<bool>> Delete(int id)
     {
-        var existingCategory = await _categoryService.GetCategoryAsync(id);
+        var existingCategory = await categoryService.GetCategoryAsync(id);
         if (existingCategory is null)
         {
             return NotFound();
         }
-        return await _categoryService.DeleteCategoryAsync(id);
+        return await categoryService.DeleteCategoryAsync(id);
     }
 
 }

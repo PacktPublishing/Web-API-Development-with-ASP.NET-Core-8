@@ -6,26 +6,19 @@ namespace HttpClientDemo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UsersController : ControllerBase
+public class UsersController(UserService usersService) : ControllerBase
 {
-    private readonly UserService _usersService;
-
-    public UsersController(UserService usersService)
-    {
-        _usersService = usersService;
-    }
-
     [HttpGet]
     public async Task<ActionResult<List<User>>> Get()
     {
-        var users = await _usersService.GetUsers();
+        var users = await usersService.GetUsers();
         return Ok(users);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<User>> Get(int id)
     {
-        var user = await _usersService.GetUser(id);
+        var user = await usersService.GetUser(id);
         if (user == null)
         {
             return NotFound();
@@ -36,7 +29,7 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> Post(User user)
     {
-        var createdUser = await _usersService.CreateUser(user);
+        var createdUser = await usersService.CreateUser(user);
         return Ok(createdUser);
     }
 
@@ -47,7 +40,7 @@ public class UsersController : ControllerBase
         {
             return BadRequest();
         }
-        var updatedUser = await _usersService.UpdateUser(user);
+        var updatedUser = await usersService.UpdateUser(user);
         return Ok(updatedUser);
     }
 }

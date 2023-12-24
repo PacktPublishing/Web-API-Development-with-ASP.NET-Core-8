@@ -5,7 +5,8 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace CachingDemo.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ILogger<CategoryService> logger, IMemoryCache cache, IDistributedCache distributedCache)
+    : ICategoryService
 {
     // Use a static list to simulate a database
 
@@ -28,28 +29,17 @@ public class CategoryService : ICategoryService
         { 3, new List<Category> { Categories[6], Categories[7] } }
     };
 
-    private readonly ILogger<CategoryService> _logger;
-    private readonly IMemoryCache _cache;
-    private readonly IDistributedCache _distributedCache;
-
-    public CategoryService(ILogger<CategoryService> logger, IMemoryCache cache, IDistributedCache distributedCache)
-    {
-        _logger = logger;
-        _cache = cache;
-        _distributedCache = distributedCache;
-    }
-
     public async Task<IEnumerable<Category>> GetCategoriesAsync()
     {
         // Try to get the categories from the cache
-        if (_cache.TryGetValue(CacheKeys.Categories, out IEnumerable<Category>? categories))
+        if (cache.TryGetValue(CacheKeys.Categories, out IEnumerable<Category>? categories))
         {
-            _logger.LogInformation("Getting categories from cache");
+            logger.LogInformation("Getting categories from cache");
             return categories ?? new List<Category>();
         }
 
         // Simulate a database query
-        _logger.LogInformation("Getting categories from the database");
+        logger.LogInformation("Getting categories from the database");
         await Task.Delay(2000);
         await RefreshCategoriesCache();
         return Categories;
@@ -74,10 +64,10 @@ public class CategoryService : ICategoryService
 
         // The following code will set the cache as null if the item is not found in the database.
         // So the next time the item is requested, it will not query the database again
-        var category = await _cache.GetOrCreateAsync($"{CacheKeys.Categories}:{id}", async entry =>
+        var category = await cache.GetOrCreateAsync($"{CacheKeys.Categories}:{id}", async entry =>
         {
             // Simulate a database query
-            _logger.LogInformation($"Getting category with id {id} from the database");
+            logger.LogInformation($"Getting category with id {id} from the database");
             await Task.Delay(2000);
             return Categories.FirstOrDefault(c => c.Id == id);
         });
@@ -95,17 +85,17 @@ public class CategoryService : ICategoryService
     private async Task RefreshCategoriesCache()
     {
         // Query the database first
-        _logger.LogInformation("Getting categories from the database");
+        logger.LogInformation("Getting categories from the database");
         await Task.Delay(2000);
         var categories = Categories;
         // Then refresh the cache
-        _cache.Remove(CacheKeys.Categories);
+        cache.Remove(CacheKeys.Categories);
         var cacheEntryOptions = new MemoryCacheEntryOptions
         {
             SlidingExpiration = TimeSpan.FromMinutes(10),
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         };
-        _cache.Set(CacheKeys.Categories, categories, cacheEntryOptions);
+        cache.Set(CacheKeys.Categories, categories, cacheEntryOptions);
     }
 
     public async Task<Category?> UpdateCategoryAsync(Category category)
@@ -182,10 +172,10 @@ public class CategoryService : ICategoryService
             SlidingExpiration = TimeSpan.FromMinutes(10),
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
         };
-        var favoritesCategories = await _distributedCache.GetOrCreateAsync(cacheKey, async () =>
+        var favoritesCategories = await distributedCache.GetOrCreateAsync(cacheKey, async () =>
         {
             // Simulate a database query
-            _logger.LogInformation("Getting favorites categories from the database");
+            logger.LogInformation("Getting favorites categories from the database");
             var categories = FavoritesCategories[userId];
             await Task.Delay(2000);
             return categories;

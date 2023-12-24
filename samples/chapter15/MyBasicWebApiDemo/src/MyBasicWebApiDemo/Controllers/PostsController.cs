@@ -8,15 +8,8 @@ namespace MyBasicWebApiDemo.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PostsController : ControllerBase
+public class PostsController(SampleDbContext context) : ControllerBase
 {
-    private readonly SampleDbContext _context;
-
-    public PostsController(SampleDbContext context)
-    {
-        _context = context;
-    }
-
     //[HttpGet]
     //public async Task<ActionResult<IEnumerable<Post>>> GetPosts()
     //{
@@ -27,7 +20,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<PaginatedList<Post>>> GetPosts(int pageIndex = 1, int pageSize = 10)
     {
-        var posts = _context.Posts.AsQueryable().AsNoTracking();
+        var posts = context.Posts.AsQueryable().AsNoTracking();
         var count = await posts.CountAsync();
         var items = await posts.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
         var result = new PaginatedList<Post>(items, count, pageIndex, pageSize);
@@ -44,7 +37,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Post>> GetPost(Guid id)
     {
-        var post = await _context.Posts.FindAsync(id);
+        var post = await context.Posts.FindAsync(id);
 
         if (post == null)
         {
@@ -66,11 +59,11 @@ public class PostsController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(post).State = EntityState.Modified;
+        context.Entry(post).State = EntityState.Modified;
 
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -89,14 +82,14 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<Post>> PostPost(Post post)
     {
-        _context.Posts.Add(post);
-        await _context.SaveChangesAsync();
+        context.Posts.Add(post);
+        await context.SaveChangesAsync();
 
         return CreatedAtAction("GetPost", new { id = post.Id }, post);
     }
 
     private bool PostExists(Guid id)
     {
-        return _context.Posts.Any(e => e.Id == id);
+        return context.Posts.Any(e => e.Id == id);
     }
 }

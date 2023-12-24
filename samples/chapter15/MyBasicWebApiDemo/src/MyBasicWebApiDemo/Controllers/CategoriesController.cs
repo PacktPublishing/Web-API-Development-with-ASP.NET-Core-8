@@ -8,19 +8,12 @@ namespace MyBasicWebApiDemo.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoriesController : ControllerBase
+public class CategoriesController(SampleDbContext context) : ControllerBase
 {
-    private readonly SampleDbContext _context;
-
-    public CategoriesController(SampleDbContext context)
-    {
-        _context = context;
-    }
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
     {
-        return await _context.Categories.ToListAsync();
+        return await context.Categories.ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -29,7 +22,7 @@ public class CategoriesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<Category>> GetCategory(Guid id)
     {
-        var category = await _context.Categories.FindAsync(id);
+        var category = await context.Categories.FindAsync(id);
 
         if (category == null)
         {
@@ -51,11 +44,11 @@ public class CategoriesController : ControllerBase
             return BadRequest();
         }
 
-        _context.Entry(category).State = EntityState.Modified;
+        context.Entry(category).State = EntityState.Modified;
 
         try
         {
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -75,14 +68,14 @@ public class CategoriesController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<Category>> PostCategory(Category category)
     {
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        context.Categories.Add(category);
+        await context.SaveChangesAsync();
 
         return CreatedAtAction("GetCategory", new { id = category.Id }, category);
     }
 
     private bool CategoryExists(Guid id)
     {
-        return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+        return (context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }

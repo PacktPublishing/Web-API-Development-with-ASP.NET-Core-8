@@ -4,14 +4,9 @@ using MyBasicWebApiDemo.Models;
 
 namespace MyBasicWebApiDemo.Data;
 
-public class SampleDbContext : DbContext
+public class SampleDbContext(DbContextOptions<SampleDbContext> options, IConfiguration configuration)
+    : DbContext(options)
 {
-    private readonly IConfiguration _configuration;
-    public SampleDbContext(DbContextOptions<SampleDbContext> options, IConfiguration configuration) : base(options)
-    {
-        _configuration = configuration;
-    }
-
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Post> Posts => Set<Post>();
 
@@ -24,7 +19,7 @@ public class SampleDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"),
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
             b => b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
     }
 }
