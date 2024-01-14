@@ -7,20 +7,13 @@ using Moq;
 namespace InvoiceApp.UnitTests;
 
 [Collection("TransactionalTests")]
-public class TransactionalInvoiceControllerTests : IDisposable
+public class TransactionalInvoiceControllerTests(TransactionalTestDatabaseFixture fixture) : IDisposable
 {
-    private readonly TransactionalTestDatabaseFixture _fixture;
-
-    public TransactionalInvoiceControllerTests(TransactionalTestDatabaseFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task UpdateInvoiceStatusAsync_ShouldUpdateStatus()
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(dbContext, emailServiceMock.Object);
         // Act
@@ -35,6 +28,6 @@ public class TransactionalInvoiceControllerTests : IDisposable
 
     public void Dispose()
     {
-        _fixture.Cleanup();
+        fixture.Cleanup();
     }
 }

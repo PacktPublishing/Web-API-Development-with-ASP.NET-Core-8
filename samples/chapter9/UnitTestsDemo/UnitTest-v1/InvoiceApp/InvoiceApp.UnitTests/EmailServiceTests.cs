@@ -10,14 +10,8 @@ namespace InvoiceApp.UnitTests;
 
 public class EmailServiceTests
 {
-    private readonly Mock<ILogger<IEmailService>> _loggerMock;
-    private readonly Mock<IEmailSender> _emailSenderMock;
-
-    public EmailServiceTests()
-    {
-        _loggerMock = new Mock<ILogger<IEmailService>>();
-        _emailSenderMock = new Mock<IEmailSender>();
-    }
+    private readonly Mock<ILogger<IEmailService>> _loggerMock = new();
+    private readonly Mock<IEmailSender> _emailSenderMock = new();
 
     [Fact]
     public void GenerateInvoiceEmail_Should_Return_Email()

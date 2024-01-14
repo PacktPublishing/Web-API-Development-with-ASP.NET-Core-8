@@ -3,17 +3,8 @@ using System.Net.Mail;
 
 namespace InvoiceApp.WebApi.Services;
 
-public class EmailService : IEmailService
+public class EmailService(ILogger<IEmailService> logger, IEmailSender emailSender) : IEmailService
 {
-    private readonly ILogger<IEmailService> _logger;
-    private readonly IEmailSender _emailSender;
-
-    public EmailService(ILogger<IEmailService> logger, IEmailSender emailSender)
-    {
-        _logger = logger;
-        _emailSender = emailSender;
-    }
-
     public (string to, string subject, string body) GenerateInvoiceEmail(Invoice invoice)
     {
         var to = invoice.Contact.Email;
@@ -40,20 +31,20 @@ public class EmailService : IEmailService
     {
         // Mock the email sending process
         // In real world, you may use a third-party email service, such as SendGrid, MailChimp, Azure Logic Apps, etc.
-        _logger.LogInformation($"Sending email to {to} with subject {subject} and body {body}");
+        logger.LogInformation($"Sending email to {to} with subject {subject} and body {body}");
         try
         {
-            await _emailSender.SendEmailAsync(to, subject, body);
-            _logger.LogInformation($"Email sent to {to} with subject {subject}");
+            await emailSender.SendEmailAsync(to, subject, body);
+            logger.LogInformation($"Email sent to {to} with subject {subject}");
         }
         catch (SmtpException e)
         {
-            _logger.LogError(e, $"SmtpClient error occurs. Failed to send email to {to} with subject {subject}.");
+            logger.LogError(e, $"SmtpClient error occurs. Failed to send email to {to} with subject {subject}.");
             throw;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Failed to send email to {to} with subject {subject}.");
+            logger.LogError(e, $"Failed to send email to {to} with subject {subject}.");
             throw;
         }
     }

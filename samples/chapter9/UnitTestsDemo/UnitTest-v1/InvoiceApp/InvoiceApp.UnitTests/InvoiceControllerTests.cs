@@ -8,20 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace InvoiceApp.UnitTests;
-public class InvoiceControllerTests : IClassFixture<TestDatabaseFixture>
+public class InvoiceControllerTests(TestDatabaseFixture fixture) : IClassFixture<TestDatabaseFixture>
 {
-    private readonly TestDatabaseFixture _fixture;
-
-    public InvoiceControllerTests(TestDatabaseFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task GetInvoices_ShouldReturnInvoices()
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(dbContext, emailServiceMock.Object);
         // Act
@@ -47,7 +40,7 @@ public class InvoiceControllerTests : IClassFixture<TestDatabaseFixture>
     public async Task GetInvoicesByStatus_ShouldReturnInvoices(InvoiceStatus status)
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(dbContext, emailServiceMock.Object);
         // Act
@@ -65,7 +58,7 @@ public class InvoiceControllerTests : IClassFixture<TestDatabaseFixture>
     public async Task CreateInvoice_ShouldCreateInvoice()
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(dbContext, emailServiceMock.Object);
         // Act
@@ -117,7 +110,7 @@ public class InvoiceControllerTests : IClassFixture<TestDatabaseFixture>
     public async Task UpdateInvoice_ShouldUpdateInvoice()
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(dbContext, emailServiceMock.Object);
         // Act

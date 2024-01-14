@@ -6,7 +6,8 @@ namespace InvoiceApp.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class InvoiceController : ControllerBase
+public class InvoiceController(IInvoiceRepository invoiceRepository, IEmailService emailService)
+    : ControllerBase
 {
     // Generate CRUD operations for Invoices
     // GET /api/invoice
@@ -16,21 +17,12 @@ public class InvoiceController : ControllerBase
     // DELETE /api/invoice/{id}
     // PATCH /api/invoice/{id}/status
 
-    private readonly IInvoiceRepository _invoiceRepository;
-    private readonly IEmailService _emailService;
-
-    public InvoiceController(IInvoiceRepository invoiceRepository, IEmailService emailService)
-    {
-        _invoiceRepository = invoiceRepository;
-        _emailService = emailService;
-    }
-
     // GET: api/Invoices
     [HttpGet]
     public async Task<ActionResult<List<Invoice>>> GetInvoicesAsync(int page = 1, int pageSize = 10,
         InvoiceStatus? status = null)
     {
-        var invoices = await _invoiceRepository.GetInvoicesAsync(page, pageSize, status);
+        var invoices = await invoiceRepository.GetInvoicesAsync(page, pageSize, status);
         return Ok(invoices);
     }
 
@@ -38,7 +30,7 @@ public class InvoiceController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Invoice>> GetInvoiceAsync(Guid id)
     {
-        var invoice = await _invoiceRepository.GetInvoiceAsync(id);
+        var invoice = await invoiceRepository.GetInvoiceAsync(id);
         if (invoice == null)
         {
             return NotFound();
@@ -57,7 +49,7 @@ public class InvoiceController : ControllerBase
         invoice.Status = InvoiceStatus.Draft;
         invoice.InvoiceItems.ForEach(x => x.Amount = x.UnitPrice * x.Quantity);
         invoice.Amount = invoice.InvoiceItems.Sum(x => x.Amount);
-        await _invoiceRepository.CreateInvoiceAsync(invoice);
+        await invoiceRepository.CreateInvoiceAsync(invoice);
         return CreatedAtAction("GetInvoice", new { id = invoice.Id }, invoice);
     }
 
@@ -65,7 +57,7 @@ public class InvoiceController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateInvoiceAsync(Guid id, Invoice invoice)
     {
-        var existingInvoice = await _invoiceRepository.GetInvoiceAsync(id);
+        var existingInvoice = await invoiceRepository.GetInvoiceAsync(id);
         if (existingInvoice == null)
         {
             return NotFound();
@@ -79,7 +71,7 @@ public class InvoiceController : ControllerBase
         invoice.Id = id;
         invoice.InvoiceItems.ForEach(x => x.Amount = x.UnitPrice * x.Quantity);
         invoice.Amount = existingInvoice.InvoiceItems.Sum(x => x.Amount);
-        await _invoiceRepository.UpdateInvoiceAsync(invoice);
+        await invoiceRepository.UpdateInvoiceAsync(invoice);
         return NoContent();
     }
 
@@ -87,7 +79,7 @@ public class InvoiceController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvoiceAsync(Guid id)
     {
-        await _invoiceRepository.DeleteInvoiceAsync(id);
+        await invoiceRepository.DeleteInvoiceAsync(id);
         return NoContent();
     }
 
@@ -95,13 +87,13 @@ public class InvoiceController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateInvoiceStatusAsync(Guid id, InvoiceStatus status)
     {
-        var invoice = await _invoiceRepository.GetInvoiceAsync(id);
+        var invoice = await invoiceRepository.GetInvoiceAsync(id);
         if (invoice == null)
         {
             return NotFound();
         }
         invoice.Status = status;
-        await _invoiceRepository.UpdateInvoiceAsync(invoice);
+        await invoiceRepository.UpdateInvoiceAsync(invoice);
         return NoContent();
     }
 
@@ -109,23 +101,23 @@ public class InvoiceController : ControllerBase
     [HttpPost("{id}/send")]
     public async Task<IActionResult> SendInvoiceAsync(Guid id)
     {
-        var existingInvoice = await _invoiceRepository.GetInvoiceAsync(id);
+        var existingInvoice = await invoiceRepository.GetInvoiceAsync(id);
         if (existingInvoice == null)
         {
             return NotFound();
         }
 
-        var (to, subject, body) = _emailService.GenerateInvoiceEmail(existingInvoice);
+        var (to, subject, body) = emailService.GenerateInvoiceEmail(existingInvoice);
         try
         {
-            await _emailService.SendEmailAsync(to, subject, body);
+            await emailService.SendEmailAsync(to, subject, body);
             existingInvoice.Status = InvoiceStatus.AwaitPayment;
         }
         catch
         {
             return BadRequest("Failed to send email.");
         }
-        await _invoiceRepository.UpdateInvoiceAsync(existingInvoice);
+        await invoiceRepository.UpdateInvoiceAsync(existingInvoice);
         return NoContent();
     }
 

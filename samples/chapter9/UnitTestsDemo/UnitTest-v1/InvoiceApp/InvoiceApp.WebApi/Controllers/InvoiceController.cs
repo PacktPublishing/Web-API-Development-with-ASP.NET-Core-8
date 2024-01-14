@@ -8,7 +8,7 @@ namespace InvoiceApp.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class InvoiceController : ControllerBase
+public class InvoiceController(InvoiceDbContext dbContext, IEmailService emailService) : ControllerBase
 {
     // Generate CRUD operations for Invoices
     // GET /api/invoice
@@ -18,21 +18,12 @@ public class InvoiceController : ControllerBase
     // DELETE /api/invoice/{id}
     //// PATCH /api/invoice/{id}/status
 
-    private readonly InvoiceDbContext _dbContext;
-    private readonly IEmailService _emailService;
-
-    public InvoiceController(InvoiceDbContext dbContext, IEmailService emailService)
-    {
-        _dbContext = dbContext;
-        _emailService = emailService;
-    }
-
     // GET: api/Invoices
     [HttpGet]
     public async Task<ActionResult<List<Invoice>>> GetInvoicesAsync(int page = 1, int pageSize = 10,
         InvoiceStatus? status = null)
     {
-        var invoices = await _dbContext.Invoices
+        var invoices = await dbContext.Invoices
             .Include(i => i.Contact)
             .Where(i => status == null || i.Status == status)
             .OrderByDescending(i => i.InvoiceDate)
@@ -46,7 +37,7 @@ public class InvoiceController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<Invoice>> GetInvoiceAsync(Guid id)
     {
-        var invoice = await _dbContext.Invoices
+        var invoice = await dbContext.Invoices
             .Include(i => i.Contact)
             .SingleOrDefaultAsync(i => i.Id == id);
         if (invoice == null)
@@ -76,8 +67,8 @@ public class InvoiceController : ControllerBase
         //    return BadRequest("Contact not found.");
         //}
         //invoice.Contact = contact;
-        await _dbContext.Invoices.AddAsync(invoice);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Invoices.AddAsync(invoice);
+        await dbContext.SaveChangesAsync();
         return CreatedAtAction("GetInvoice", new { id = invoice.Id }, invoice);
     }
 
@@ -85,13 +76,13 @@ public class InvoiceController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateInvoiceAsync(Guid id, Invoice invoice)
     {
-        var existingInvoice = await _dbContext.Invoices
+        var existingInvoice = await dbContext.Invoices
             .SingleOrDefaultAsync(i => i.Id == id);
         if (existingInvoice == null)
         {
             return NotFound();
         }
-        var contact = await _dbContext.Contacts.FindAsync(invoice.ContactId);
+        var contact = await dbContext.Contacts.FindAsync(invoice.ContactId);
         if (contact == null)
         {
             return BadRequest("Contact not found");
@@ -103,10 +94,10 @@ public class InvoiceController : ControllerBase
         }
 
         invoice.Id = id;
-        _dbContext.Entry(existingInvoice).CurrentValues.SetValues(invoice);
+        dbContext.Entry(existingInvoice).CurrentValues.SetValues(invoice);
         existingInvoice.InvoiceItems.ForEach(x => x.Amount = x.UnitPrice * x.Quantity);
         existingInvoice.Amount = existingInvoice.InvoiceItems.Sum(x => x.Amount);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         return NoContent();
     }
 
@@ -114,14 +105,14 @@ public class InvoiceController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInvoiceAsync(Guid id)
     {
-        var existingInvoice = await _dbContext.Invoices
+        var existingInvoice = await dbContext.Invoices
             .SingleOrDefaultAsync(i => i.Id == id);
         if (existingInvoice == null)
         {
             return NotFound();
         }
-        _dbContext.Invoices.Remove(existingInvoice);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Invoices.Remove(existingInvoice);
+        await dbContext.SaveChangesAsync();
         return NoContent();
     }
 
@@ -129,15 +120,15 @@ public class InvoiceController : ControllerBase
     [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateInvoiceStatusAsync(Guid id, InvoiceStatus status)
     {
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync();
-        var existingInvoice = await _dbContext.Invoices
+        await using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var existingInvoice = await dbContext.Invoices
             .SingleOrDefaultAsync(i => i.Id == id);
         if (existingInvoice == null)
         {
             return NotFound();
         }
         existingInvoice.Status = status;
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         await transaction.CommitAsync();
         return NoContent();
     }
@@ -146,7 +137,7 @@ public class InvoiceController : ControllerBase
     [HttpPost("{id}/send")]
     public async Task<IActionResult> SendInvoiceAsync(Guid id)
     {
-        var existingInvoice = await _dbContext.Invoices
+        var existingInvoice = await dbContext.Invoices
             .Include(i => i.Contact)
             .SingleOrDefaultAsync(i => i.Id == id);
         if (existingInvoice == null)
@@ -154,17 +145,17 @@ public class InvoiceController : ControllerBase
             return NotFound();
         }
 
-        var (to, subject, body) = _emailService.GenerateInvoiceEmail(existingInvoice);
+        var (to, subject, body) = emailService.GenerateInvoiceEmail(existingInvoice);
         try
         {
-            await _emailService.SendEmailAsync(to, subject, body);
+            await emailService.SendEmailAsync(to, subject, body);
             existingInvoice.Status = InvoiceStatus.AwaitPayment;
         }
         catch
         {
             return BadRequest("Failed to send email.");
         }
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
         return NoContent();
     }
 

@@ -4,20 +4,13 @@ using Microsoft.EntityFrameworkCore;
 namespace InvoiceApp.UnitTests;
 
 [Collection("TransactionalTests")]
-public class TransactionalContactControllerTests : IDisposable
+public class TransactionalContactControllerTests(TransactionalTestDatabaseFixture fixture) : IDisposable
 {
-    private readonly TransactionalTestDatabaseFixture _fixture;
-
-    public TransactionalContactControllerTests(TransactionalTestDatabaseFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task UpdateContactAsync_ShouldUpdateContact()
     {
         // Arrange
-        await using var dbContext = _fixture.CreateDbContext();
+        await using var dbContext = fixture.CreateDbContext();
         var controller = new ContactController(dbContext);
         // Act
         var contact = await dbContext.Contacts.FirstAsync(x => x.FirstName == "John");
@@ -32,6 +25,6 @@ public class TransactionalContactControllerTests : IDisposable
 
     public void Dispose()
     {
-        _fixture.Cleanup();
+        fixture.Cleanup();
     }
 }
