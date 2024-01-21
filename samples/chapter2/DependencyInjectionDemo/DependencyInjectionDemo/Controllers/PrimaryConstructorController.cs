@@ -1,25 +1,17 @@
-using DependencyInjectionDemo.Models;
+﻿using DependencyInjectionDemo.Models;
 using DependencyInjectionDemo.Services;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace DependencyInjectionDemo.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PostsController : ControllerBase
+public class PrimaryConstructorController(IPostService postService) : ControllerBase
 {
-    private readonly IPostService _postsService;
-
-    public PostsController(IPostService postService)
-    {
-        _postsService = postService;
-    }
-
     [HttpGet("{id}")]
     public async Task<ActionResult<Post>> GetPost(int id)
     {
-        var post = await _postsService.GetPost(id);
+        var post = await postService.GetPost(id);
         if (post == null)
         {
             return NotFound();
@@ -31,14 +23,14 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Post>> CreatePost(Post post)
     {
-        await _postsService.CreatePost(post);
+        await postService.CreatePost(post);
         return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
     }
 
     [HttpGet]
     public async Task<ActionResult<List<Post>>> GetPosts()
     {
-        var posts = await _postsService.GetAllPosts();
+        var posts = await postService.GetAllPosts();
         return Ok(posts);
     }
 
@@ -50,7 +42,7 @@ public class PostsController : ControllerBase
             return BadRequest();
         }
 
-        var updatedPost = await _postsService.UpdatePost(id, post);
+        var updatedPost = await postService.UpdatePost(id, post);
         if (updatedPost == null)
         {
             return NotFound();
@@ -62,13 +54,14 @@ public class PostsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeletePost(int id)
     {
-        var post = await _postsService.GetPost(id);
+        var post = await postService.GetPost(id);
         if (post == null)
         {
             return NotFound();
         }
 
-        await _postsService.DeletePost(id);
+        await postService.DeletePost(id);
         return NoContent();
     }
 }
+
