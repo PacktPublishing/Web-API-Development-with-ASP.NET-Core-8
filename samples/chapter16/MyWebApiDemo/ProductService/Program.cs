@@ -26,7 +26,7 @@ builder.Services.AddOpenTelemetry()
     {
         config.AddService(nameof(ProductService));
     })
-    .UseAzureMonitor()
+    //.UseAzureMonitor()
     .WithMetrics(metrics =>
     {
         metrics.AddAspNetCoreInstrumentation()

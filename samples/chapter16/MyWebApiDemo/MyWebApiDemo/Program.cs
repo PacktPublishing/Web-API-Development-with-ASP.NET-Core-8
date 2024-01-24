@@ -61,7 +61,7 @@ builder.Services.AddOpenTelemetry()
     {
         config.AddService(nameof(MyWebApiDemo));
     })
-    .UseAzureMonitor()
+    //.UseAzureMonitor()
     .WithMetrics(metrics =>
     {
         metrics.AddAspNetCoreInstrumentation()
