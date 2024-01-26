@@ -5,20 +5,13 @@ namespace ConfigurationDemo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ConfigurationController : ControllerBase
+public class ConfigurationController(IConfiguration configuration) : ControllerBase
 {
-    private readonly IConfiguration _configuration;
-
-    public ConfigurationController(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-
     [HttpGet]
     [Route("my-key")]
     public ActionResult GetMyKey()
     {
-        var myKey = _configuration["MyKey"];
+        var myKey = configuration["MyKey"];
         return Ok(myKey);
     }
 
@@ -26,8 +19,8 @@ public class ConfigurationController : ControllerBase
     [Route("database-configuration")]
     public ActionResult GetDatabaseConfiguration()
     {
-        var type = _configuration["database:Type"];
-        var connectionString = _configuration["Database:ConnectionString"];
+        var type = configuration["database:Type"];
+        var connectionString = configuration["Database:ConnectionString"];
         return Ok(new { Type = type, ConnectionString = connectionString });
     }
 
@@ -37,7 +30,7 @@ public class ConfigurationController : ControllerBase
     {
         var databaseOption = new DatabaseOption();
         // The `SectionName` is defined in the `DatabaseOption` class, which shows the section name in the `appsettings.json` file.
-        _configuration.GetSection(DatabaseOption.SectionName).Bind(databaseOption);
+        configuration.GetSection(DatabaseOption.SectionName).Bind(databaseOption);
         // You can also use the code below to achieve the same result
         // _configuration.Bind(DatabaseOption.SectionName, databaseOption);
         return Ok(new { databaseOption.Type, databaseOption.ConnectionString });
@@ -47,7 +40,7 @@ public class ConfigurationController : ControllerBase
     [Route("database-configuration-with-generic-type")]
     public ActionResult GetDatabaseConfigurationWithGenericType()
     {
-        var databaseOption = _configuration.GetSection(DatabaseOption.SectionName).Get<DatabaseOption>();
+        var databaseOption = configuration.GetSection(DatabaseOption.SectionName).Get<DatabaseOption>();
         return Ok(new { databaseOption?.Type, databaseOption?.ConnectionString });
     }
 
