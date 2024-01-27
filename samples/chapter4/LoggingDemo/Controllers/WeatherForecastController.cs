@@ -27,6 +27,8 @@ public class WeatherForecastController : ControllerBase
         _logger.LogInformation("This is a logging message.");
         // Use the LogTrace() method
         _logger.LogTrace("This is a trace message");
+        // Use the event id
+        _logger.LogInformation(EventIds.LoginEvent, "This is a logging message with event id.");
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
