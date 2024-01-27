@@ -32,7 +32,7 @@ public class ConfigurationController(IConfiguration configuration) : ControllerB
         // The `SectionName` is defined in the `DatabaseOption` class, which shows the section name in the `appsettings.json` file.
         configuration.GetSection(DatabaseOption.SectionName).Bind(databaseOption);
         // You can also use the code below to achieve the same result
-        // _configuration.Bind(DatabaseOption.SectionName, databaseOption);
+        // configuration.Bind(DatabaseOption.SectionName, databaseOption);
         return Ok(new { databaseOption.Type, databaseOption.ConnectionString });
     }
 
