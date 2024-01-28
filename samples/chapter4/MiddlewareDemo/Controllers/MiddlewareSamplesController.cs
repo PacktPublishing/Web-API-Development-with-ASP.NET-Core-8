@@ -6,16 +6,9 @@ namespace MiddlewareDemo.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MiddlewareSamplesController : ControllerBase
+public class MiddlewareSamplesController(ILogger<WeatherForecastController> logger) : ControllerBase
 {
     private readonly Random _random = new();
-
-    private readonly ILogger<WeatherForecastController> _logger;
-
-    public MiddlewareSamplesController(ILogger<WeatherForecastController> logger)
-    {
-        _logger = logger;
-    }
 
     [HttpGet("rate-limiting")]
     [EnableRateLimiting(policyName: "fixed")]
@@ -30,14 +23,14 @@ public class MiddlewareSamplesController : ControllerBase
     public async Task<ActionResult> RequestTimeoutDemo()
     {
         var delay = _random.Next(1, 10);
-        _logger.LogInformation($"Delaying for {delay} seconds");
+        logger.LogInformation($"Delaying for {delay} seconds");
         try
         {
             await Task.Delay(TimeSpan.FromSeconds(delay), Request.HttpContext.RequestAborted);
         }
         catch
         {
-            _logger.LogWarning("The request timed out");
+            logger.LogWarning("The request timed out");
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "The request timed out");
         }
         return Ok($"Hello! The task is complete in {delay} seconds");
@@ -48,14 +41,14 @@ public class MiddlewareSamplesController : ControllerBase
     public async Task<ActionResult> RequestTimeoutShortDemo()
     {
         var delay = _random.Next(1, 10);
-        _logger.LogInformation($"Delaying for {delay} seconds");
+        logger.LogInformation($"Delaying for {delay} seconds");
         try
         {
             await Task.Delay(TimeSpan.FromSeconds(delay), Request.HttpContext.RequestAborted);
         }
         catch
         {
-            _logger.LogWarning("The request timed out");
+            logger.LogWarning("The request timed out");
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "The request timed out");
         }
         return Ok($"Hello! The task is complete in {delay} seconds");
@@ -66,14 +59,14 @@ public class MiddlewareSamplesController : ControllerBase
     public async Task<ActionResult> RequestTimeoutLongDemo()
     {
         var delay = _random.Next(1, 10);
-        _logger.LogInformation($"Delaying for {delay} seconds");
+        logger.LogInformation($"Delaying for {delay} seconds");
         try
         {
             await Task.Delay(TimeSpan.FromSeconds(delay), Request.HttpContext.RequestAborted);
         }
         catch
         {
-            _logger.LogWarning("The request timed out");
+            logger.LogWarning("The request timed out");
             return StatusCode(StatusCodes.Status503ServiceUnavailable, "The request timed out");
         }
         return Ok($"Hello! The task is complete in {delay} seconds");
