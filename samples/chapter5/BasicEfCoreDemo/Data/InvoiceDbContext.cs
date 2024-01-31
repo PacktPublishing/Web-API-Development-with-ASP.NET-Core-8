@@ -4,12 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BasicEfCoreDemo.Data;
 
-public class InvoiceDbContext : DbContext
+public class InvoiceDbContext(DbContextOptions<InvoiceDbContext> options) : DbContext(options)
 {
-    public InvoiceDbContext(DbContextOptions<InvoiceDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<Invoice> Invoices => Set<Invoice>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
