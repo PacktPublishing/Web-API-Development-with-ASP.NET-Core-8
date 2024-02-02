@@ -2,7 +2,6 @@ using BasicEfCoreDemo.Data;
 using BasicEfCoreDemo.Models;
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace BasicEfCoreDemo.Controllers
@@ -30,13 +29,14 @@ namespace BasicEfCoreDemo.Controllers
         //     return await _context.Invoices.ToListAsync();
         // }
 
-        // The following code snippet shows how to retrieve all invoices from the database with a specific status.
-        // [HttpGet]
-        // public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(InvoiceStatus status)
-        // {
-        //     // Omitted for brevity 
-        //     return await _context.Invoices.Where(x => x.Status == status).ToListAsync();
-        // }
+        //The following code snippet shows how to retrieve all invoices from the database with a specific status.
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(InvoiceStatus? status)
+        //{
+        //    // Omitted for brevity 
+        //    return await _context.Invoices.Where(x => status == null || x.Status == status).ToListAsync();
+        //}
 
         // The following code snippet shows how to retrieve pages of invoices from the database.s
         [HttpGet]
