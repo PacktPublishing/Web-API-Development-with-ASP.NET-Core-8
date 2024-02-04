@@ -8,35 +8,28 @@ namespace ConcurrencyConflictDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public ProductsController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Products
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            if (_context.Products == null)
+            if (context.Products == null)
             {
                 return NotFound();
             }
-            return await _context.Products.ToListAsync();
+            return await context.Products.ToListAsync();
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            if (_context.Products == null)
+            if (context.Products == null)
             {
                 return NotFound();
             }
-            var product = await _context.Products.FindAsync(id);
+            var product = await context.Products.FindAsync(id);
 
             if (product == null)
             {
@@ -56,11 +49,11 @@ namespace ConcurrencyConflictDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(product).State = EntityState.Modified;
+            context.Entry(product).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -68,10 +61,8 @@ namespace ConcurrencyConflictDemo.Controllers
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
 
             return NoContent();
@@ -82,12 +73,12 @@ namespace ConcurrencyConflictDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            if (_context.Products == null)
+            if (context.Products == null)
             {
-                return Problem("Entity set 'SampleDbContext.Products'  is null.");
+                return Problem("Entity set 'SampleDbContext.Products' is null.");
             }
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduct", new { id = product.Id }, product);
         }
@@ -96,11 +87,11 @@ namespace ConcurrencyConflictDemo.Controllers
         [HttpPost("{id}/sell/{quantity}")]
         public async Task<ActionResult<Product>> SellProduct(int id, int quantity, int delay = 0)
         {
-            if (_context.Products == null)
+            if (context.Products == null)
             {
                 return Problem("Entity set 'SampleDbContext.Products'  is null.");
             }
-            var product = await _context.Products.FindAsync(id);
+            var product = await context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -114,7 +105,7 @@ namespace ConcurrencyConflictDemo.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -129,25 +120,25 @@ namespace ConcurrencyConflictDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (_context.Products == null)
+            if (context.Products == null)
             {
                 return NotFound();
             }
-            var product = await _context.Products.FindAsync(id);
+            var product = await context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            context.Products.Remove(product);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ProductExists(int id)
         {
-            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

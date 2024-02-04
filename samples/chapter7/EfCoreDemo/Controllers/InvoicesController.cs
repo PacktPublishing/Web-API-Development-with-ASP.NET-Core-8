@@ -8,49 +8,41 @@ namespace EfCoreDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoicesController : ControllerBase
+    public class InvoicesController(InvoiceDbContext context, ILogger<InvoicesController> logger)
+        : ControllerBase
     {
-        private readonly InvoiceDbContext _context;
-        private readonly ILogger<InvoicesController> _logger;
-
-        public InvoicesController(InvoiceDbContext context, ILogger<InvoicesController> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
         // GET: api/Invoices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(int page = 1, int pageSize = 10,
             InvoiceStatus? status = null)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
             // Use IQueryable
-            _logger.LogInformation($"Creating the IQueryable...");
-            var list1 = _context.Invoices.Where(x => status == null || x.Status == status);
-            _logger.LogInformation($"IQueryable created");
-            _logger.LogInformation($"Query the result using IQueryable...");
+            logger.LogInformation($"Creating the IQueryable...");
+            var list1 = context.Invoices.Where(x => status == null || x.Status == status);
+            logger.LogInformation($"IQueryable created");
+            logger.LogInformation($"Query the result using IQueryable...");
             var query1 = list1.OrderByDescending(x => x.InvoiceDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize);
-            _logger.LogInformation($"Execute the query using IQueryable");
+            logger.LogInformation($"Execute the query using IQueryable");
             var result1 = await query1.ToListAsync();
-            _logger.LogInformation($"Result created using IQueryable");
+            logger.LogInformation($"Result created using IQueryable");
 
             // Use IEnumerable
-            _logger.LogInformation($"Creating the IEnumerable...");
-            var list2 = _context.Invoices.Where(x => status == null || x.Status == status).AsEnumerable();
-            _logger.LogInformation($"IEnumerable created");
-            _logger.LogInformation($"Query the result using IEnumerable...");
+            logger.LogInformation($"Creating the IEnumerable...");
+            var list2 = context.Invoices.Where(x => status == null || x.Status == status).AsEnumerable();
+            logger.LogInformation($"IEnumerable created");
+            logger.LogInformation($"Query the result using IEnumerable...");
             var query2 = list2.OrderByDescending(x => x.InvoiceDate)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize);
-            _logger.LogInformation($"Execute the query using IEnumerable");
+            logger.LogInformation($"Execute the query using IEnumerable");
             var result2 = query2.ToList();
-            _logger.LogInformation($"Result created using IEnumerable");
+            logger.LogInformation($"Result created using IEnumerable");
 
             return result1;
         }
@@ -59,12 +51,12 @@ namespace EfCoreDemo.Controllers
         [Route("search")]
         public async Task<ActionResult<IEnumerable<Invoice>>> SearchInvoices(string search)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
-            var list = await _context.Invoices
+            var list = await context.Invoices
                 // The below code will throw an exception if the CalculatedTax method is not static
                 //.Where(x => (x.ContactName.Contains(search) || x.InvoiceNumber.Contains(search)) && CalculateTax(x.Amount) > 10)
                 .Where(x => (x.ContactName.Contains(search) || x.InvoiceNumber.Contains(search)))
@@ -93,12 +85,12 @@ namespace EfCoreDemo.Controllers
         [Route("paid")]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetPaidInvoices()
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
-            var list = await _context.Invoices
+            var list = await context.Invoices
                 .FromSql($"SELECT * FROM Invoices WHERE Status = 2")
                 .ToListAsync();
             return list;
@@ -108,12 +100,12 @@ namespace EfCoreDemo.Controllers
         [Route("status")]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(string status)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
-            var list = await _context.Invoices
+            var list = await context.Invoices
                 .FromSql($"SELECT * FROM Invoices WHERE Status = {status}")
                 .ToListAsync();
             return list;
@@ -123,14 +115,14 @@ namespace EfCoreDemo.Controllers
         [Route("free-search")]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(string propertyName, string propertyValue)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
             var value = new SqlParameter("value", propertyValue);
 
-            var list = await _context.Invoices
+            var list = await context.Invoices
                 .FromSqlRaw($"SELECT * FROM Invoices WHERE {propertyName} = @value", value)
                 .ToListAsync();
             return list;
@@ -140,12 +132,12 @@ namespace EfCoreDemo.Controllers
         [Route("ids")]
         public ActionResult<IEnumerable<Guid>> GetInvoicesIds(string status)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
-            var result = _context.Database
+            var result = context.Database
                 .SqlQuery<Guid>($"SELECT Id FROM Invoices WHERE Status = {status}")
                 .ToList();
             return result;
@@ -157,19 +149,19 @@ namespace EfCoreDemo.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
-            _logger.LogInformation($"Invoice {id} is loading from the database.");
-            var invoice = await _context.Invoices.FindAsync(id);
-            _logger.LogInformation($"Invoice {invoice?.Id} is loaded from the database.");
+            logger.LogInformation($"Invoice {id} is loading from the database.");
+            var invoice = await context.Invoices.FindAsync(id);
+            logger.LogInformation($"Invoice {invoice?.Id} is loaded from the database.");
 
-            _logger.LogInformation($"Invoice {id} is loading from the context.");
-            invoice = await _context.Invoices.FindAsync(id);
-            _logger.LogInformation($"Invoice {invoice?.Id} is loaded from the context.");
+            logger.LogInformation($"Invoice {id} is loading from the context.");
+            invoice = await context.Invoices.FindAsync(id);
+            logger.LogInformation($"Invoice {invoice?.Id} is loaded from the context.");
 
-            invoice = await _context.Invoices.FirstOrDefaultAsync(x => x.Id == id);
+            invoice = await context.Invoices.FirstOrDefaultAsync(x => x.Id == id);
 
             // Use no-tracking query to improve performance.
             // var invoice = await _context.Invoices.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
@@ -224,16 +216,16 @@ namespace EfCoreDemo.Controllers
             // invoiceToUpdate.Status = invoice.Status;
 
             // A better way to update only the fields that have changed
-            var invoiceToUpdate = await _context.Invoices.FindAsync(id);
+            var invoiceToUpdate = await context.Invoices.FindAsync(id);
             if (invoiceToUpdate == null)
             {
                 return NotFound();
             }
             // Update only the properties that have changed
-            _context.Entry(invoiceToUpdate).CurrentValues.SetValues(invoice);
+            context.Entry(invoiceToUpdate).CurrentValues.SetValues(invoice);
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -252,7 +244,7 @@ namespace EfCoreDemo.Controllers
         [Route("status/overdue")]
         public async Task<ActionResult> UpdateInvoicesStatusAsOverdue(DateTime date)
         {
-            var result = await _context.Invoices
+            var result = await context.Invoices
                 .Where(i => i.InvoiceDate < date && i.Status == InvoiceStatus.AwaitPayment)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Status, InvoiceStatus.Overdue));
             return Ok();
@@ -263,15 +255,15 @@ namespace EfCoreDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return Problem("Entity set 'InvoiceDbContext.Invoices'  is null.");
             }
 
-            _context.Invoices.Add(invoice);
+            context.Invoices.Add(invoice);
             // The above line is equivalent to the following two lines:
             //_context.Entry(invoice).State = EntityState.Added;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetInvoice", new { id = invoice.Id }, invoice);
         }
@@ -280,7 +272,7 @@ namespace EfCoreDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(Guid id)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
@@ -305,14 +297,14 @@ namespace EfCoreDemo.Controllers
             //await _context.Database.ExecuteSqlAsync($"DELETE FROM Invoices WHERE Id = {id}");
 
             // Another way to delete an entity is to use the `ExecuteDeletAsync` method. It is available from EF Core 7.0.
-            await _context.Invoices.Where(x => x.Id == id).ExecuteDeleteAsync();
+            await context.Invoices.Where(x => x.Id == id).ExecuteDeleteAsync();
 
             return NoContent();
         }
 
         private bool InvoiceExists(Guid id)
         {
-            return (_context.Invoices?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Invoices?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
