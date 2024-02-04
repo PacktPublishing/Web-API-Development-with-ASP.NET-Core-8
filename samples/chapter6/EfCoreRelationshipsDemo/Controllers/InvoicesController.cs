@@ -7,26 +7,19 @@ namespace EfCoreRelationshipsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoicesController : ControllerBase
+    public class InvoicesController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public InvoicesController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Invoices
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices(int page = 1, int pageSize = 10,
             InvoiceStatus? status = null)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
-            return await _context.Invoices
+            return await context.Invoices
                 .Include(x => x.InvoiceItems)
                 .Where(x => status == null || x.Status == status)
                 .OrderByDescending(x => x.InvoiceDate)
@@ -40,13 +33,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Invoice>> GetInvoice(Guid id)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
             //var invoice = await _context.Invoices.FindAsync(id);
-            var invoice = await _context.Invoices.Include(x => x.InvoiceItems).SingleOrDefaultAsync(x => x.Id == id);
+            var invoice = await context.Invoices.Include(x => x.InvoiceItems).SingleOrDefaultAsync(x => x.Id == id);
 
             if (invoice == null)
             {
@@ -66,11 +59,11 @@ namespace EfCoreRelationshipsDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(invoice).State = EntityState.Modified;
+            context.Entry(invoice).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -92,13 +85,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Invoice>> PostInvoice(Invoice invoice)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return Problem("Entity set 'InvoiceDbContext.Invoices'  is null.");
             }
 
-            _context.Invoices.Add(invoice);
-            await _context.SaveChangesAsync();
+            context.Invoices.Add(invoice);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetInvoice", new { id = invoice.Id }, invoice);
         }
@@ -107,24 +100,24 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInvoice(Guid id)
         {
-            if (_context.Invoices == null)
+            if (context.Invoices == null)
             {
                 return NotFound();
             }
 
             //await _context.Invoices.Where(x => x.Id == id).ExecuteDeleteAsync();
-            var invoice = await _context.Invoices.FindAsync(id);
+            var invoice = await context.Invoices.FindAsync(id);
             if (invoice == null)
             {
                 return NotFound();
             }
-            _context.Invoices.Remove(invoice);
+            context.Invoices.Remove(invoice);
             return NoContent();
         }
 
         private bool InvoiceExists(Guid id)
         {
-            return (_context.Invoices?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Invoices?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

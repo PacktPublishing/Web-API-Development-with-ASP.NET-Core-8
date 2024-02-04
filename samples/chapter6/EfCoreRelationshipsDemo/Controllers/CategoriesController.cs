@@ -7,37 +7,30 @@ namespace EfCoreRelationshipsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public CategoriesController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
-            if (_context.Categories == null)
+            if (context.Categories == null)
             {
                 return NotFound();
             }
 
-            return await _context.Categories.ToListAsync();
+            return await context.Categories.ToListAsync();
         }
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(Guid id)
         {
-            if (_context.Categories == null)
+            if (context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await context.Categories.FindAsync(id);
 
             if (category == null)
             {
@@ -57,11 +50,11 @@ namespace EfCoreRelationshipsDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(category).State = EntityState.Modified;
+            context.Entry(category).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,13 +76,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            if (_context.Categories == null)
+            if (context.Categories == null)
             {
                 return Problem("Entity set 'InvoiceDbContext.Categories'  is null.");
             }
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            context.Categories.Add(category);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
         }
@@ -98,12 +91,12 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
         {
-            if (_context.Categories == null)
+            if (context.Categories == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.Include(x => x.Posts).SingleOrDefaultAsync(x => x.Id == id);
+            var category = await context.Categories.Include(x => x.Posts).SingleOrDefaultAsync(x => x.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -114,15 +107,15 @@ namespace EfCoreRelationshipsDemo.Controllers
             // {
             //     post.Category = null;
             // }
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            context.Categories.Remove(category);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool CategoryExists(Guid id)
         {
-            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

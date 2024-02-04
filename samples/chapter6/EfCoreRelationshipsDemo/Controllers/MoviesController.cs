@@ -7,37 +7,30 @@ namespace EfCoreRelationshipsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class MoviesController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public MoviesController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Movies
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
-            if (_context.Movies == null)
+            if (context.Movies == null)
             {
                 return NotFound();
             }
 
-            return await _context.Movies.Include(x => x.Actors).ToListAsync();
+            return await context.Movies.Include(x => x.Actors).ToListAsync();
         }
 
         // GET: api/Movies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(Guid id)
         {
-            if (_context.Movies == null)
+            if (context.Movies == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies.Include(x => x.Actors).SingleOrDefaultAsync(x => x.Id == id);
+            var movie = await context.Movies.Include(x => x.Actors).SingleOrDefaultAsync(x => x.Id == id);
 
             if (movie == null)
             {
@@ -57,11 +50,11 @@ namespace EfCoreRelationshipsDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(movie).State = EntityState.Modified;
+            context.Entry(movie).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,13 +76,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-            if (_context.Movies == null)
+            if (context.Movies == null)
             {
                 return Problem("Entity set 'SampleDbContext.Movies'  is null.");
             }
 
-            _context.Movies.Add(movie);
-            await _context.SaveChangesAsync();
+            context.Movies.Add(movie);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetMovie", new { id = movie.Id }, movie);
         }
@@ -98,26 +91,26 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovie(Guid id)
         {
-            if (_context.Movies == null)
+            if (context.Movies == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies.FindAsync(id);
+            var movie = await context.Movies.FindAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
 
-            _context.Movies.Remove(movie);
-            await _context.SaveChangesAsync();
+            context.Movies.Remove(movie);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool MovieExists(Guid id)
         {
-            return (_context.Movies?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Movies?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

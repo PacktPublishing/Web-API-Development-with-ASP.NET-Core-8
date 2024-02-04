@@ -7,37 +7,30 @@ namespace EfCoreRelationshipsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContactsController : ControllerBase
+    public class ContactsController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public ContactsController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Contacts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contact>>> GetContacts()
         {
-            if (_context.Contacts == null)
+            if (context.Contacts == null)
             {
                 return NotFound();
             }
 
-            return await _context.Contacts.Include(x => x.Address).ToListAsync();
+            return await context.Contacts.Include(x => x.Address).ToListAsync();
         }
 
         // GET: api/Contacts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Contact>> GetContact(Guid id)
         {
-            if (_context.Contacts == null)
+            if (context.Contacts == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contacts.FindAsync(id);
+            var contact = await context.Contacts.FindAsync(id);
 
             if (contact == null)
             {
@@ -57,11 +50,11 @@ namespace EfCoreRelationshipsDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(contact).State = EntityState.Modified;
+            context.Entry(contact).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -83,13 +76,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Contact>> PostContact(Contact contact)
         {
-            if (_context.Contacts == null)
+            if (context.Contacts == null)
             {
-                return Problem("Entity set 'InvoiceDbContext.Contacts'  is null.");
+                return Problem("Entity set 'SampleDbContext.Contacts'  is null.");
             }
 
-            _context.Contacts.Add(contact);
-            await _context.SaveChangesAsync();
+            context.Contacts.Add(contact);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetContact", new { id = contact.Id }, contact);
         }
@@ -98,26 +91,26 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteContact(Guid id)
         {
-            if (_context.Contacts == null)
+            if (context.Contacts == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contacts.FindAsync(id);
+            var contact = await context.Contacts.FindAsync(id);
             if (contact == null)
             {
                 return NotFound();
             }
 
-            _context.Contacts.Remove(contact);
-            await _context.SaveChangesAsync();
+            context.Contacts.Remove(contact);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ContactExists(Guid id)
         {
-            return (_context.Contacts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Contacts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

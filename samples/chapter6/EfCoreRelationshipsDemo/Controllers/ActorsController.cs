@@ -8,37 +8,30 @@ namespace EfCoreRelationshipsDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActorsController : ControllerBase
+    public class ActorsController(SampleDbContext context) : ControllerBase
     {
-        private readonly SampleDbContext _context;
-
-        public ActorsController(SampleDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Actors
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Actor>>> GetActors()
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound();
             }
 
-            return await _context.Actors.Include(x => x.Movies).ToListAsync();
+            return await context.Actors.Include(x => x.Movies).ToListAsync();
         }
 
         // GET: api/Actors/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Actor>> GetActor(Guid id)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound();
             }
 
-            var actor = await _context.Actors.FindAsync(id);
+            var actor = await context.Actors.FindAsync(id);
 
             if (actor == null)
             {
@@ -58,11 +51,11 @@ namespace EfCoreRelationshipsDemo.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(actor).State = EntityState.Modified;
+            context.Entry(actor).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -84,13 +77,13 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Actor>> PostActor(Actor actor)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return Problem("Entity set 'SampleDbContext.Actors'  is null.");
             }
 
-            _context.Actors.Add(actor);
-            await _context.SaveChangesAsync();
+            context.Actors.Add(actor);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetActor", new { id = actor.Id }, actor);
         }
@@ -99,19 +92,19 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteActor(Guid id)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound();
             }
 
-            var actor = await _context.Actors.FindAsync(id);
+            var actor = await context.Actors.FindAsync(id);
             if (actor == null)
             {
                 return NotFound();
             }
 
-            _context.Actors.Remove(actor);
-            await _context.SaveChangesAsync();
+            context.Actors.Remove(actor);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
@@ -119,18 +112,18 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpPost("{id}/movies/{movieId}")]
         public async Task<IActionResult> AddMovie(Guid id, Guid movieId)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound("Actors is null.");
             }
 
-            var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync(x => x.Id == id);
+            var actor = await context.Actors.Include(x => x.Movies).SingleOrDefaultAsync(x => x.Id == id);
             if (actor == null)
             {
                 return NotFound($"Actor with id {id} not found.");
             }
 
-            var movie = await _context.Movies.FindAsync(movieId);
+            var movie = await context.Movies.FindAsync(movieId);
             if (movie == null)
             {
                 return NotFound($"Movie with id {movieId} not found.");
@@ -142,7 +135,7 @@ namespace EfCoreRelationshipsDemo.Controllers
             }
 
             actor.Movies.Add(movie);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetActor", new { id = actor.Id }, actor);
         }
@@ -150,12 +143,12 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpGet("{id}/movies")]
         public async Task<IActionResult> GetMovies(Guid id)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound("Actors is null.");
             }
 
-            var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
+            var actor = await context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
             if (actor == null)
             {
                 return NotFound($"Actor with id {id} not found.");
@@ -167,32 +160,32 @@ namespace EfCoreRelationshipsDemo.Controllers
         [HttpDelete("{id}/movies/{movieId}")]
         public async Task<IActionResult> DeleteMovie(Guid id, Guid movieId)
         {
-            if (_context.Actors == null)
+            if (context.Actors == null)
             {
                 return NotFound("Actors is null.");
             }
 
-            var actor = await _context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
+            var actor = await context.Actors.Include(x => x.Movies).SingleOrDefaultAsync();
             if (actor == null)
             {
                 return NotFound($"Actor with id {id} not found.");
             }
 
-            var movie = await _context.Movies.FindAsync(movieId);
+            var movie = await context.Movies.FindAsync(movieId);
             if (movie == null)
             {
                 return NotFound($"Movie with id {movieId} not found.");
             }
 
             actor.Movies.Remove(movie);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool ActorExists(Guid id)
         {
-            return (_context.Actors?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (context.Actors?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
