@@ -10,19 +10,12 @@ namespace PasswordPolicyDemo.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AccountController : ControllerBase
+public class AccountController(
+    UserManager<AppUser> userManager,
+    IConfiguration configuration,
+    SignInManager<AppUser> signInManager)
+    : ControllerBase
 {
-    private readonly UserManager<AppUser> _userManager;
-    private readonly IConfiguration _configuration;
-    private readonly SignInManager<AppUser> _signInManager;
-
-    public AccountController(UserManager<AppUser> userManager, IConfiguration configuration, SignInManager<AppUser> signInManager)
-    {
-        _userManager = userManager;
-        _configuration = configuration;
-        _signInManager = signInManager;
-    }
-
     // Create an action to register a new user
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] AddOrUpdateAppUserModel model)
@@ -30,7 +23,7 @@ public class AccountController : ControllerBase
         // Check if the model is valid
         if (ModelState.IsValid)
         {
-            var existedUser = await _userManager.FindByNameAsync(model.UserName);
+            var existedUser = await userManager.FindByNameAsync(model.UserName);
             if (existedUser != null)
             {
                 ModelState.AddModelError("", "User name is already taken");
@@ -44,7 +37,7 @@ public class AccountController : ControllerBase
                 SecurityStamp = Guid.NewGuid().ToString()
             };
             // Try to save the user
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(user, model.Password);
             // If the user is successfully created, return Ok
             if (result.Succeeded)
             {
@@ -69,11 +62,11 @@ public class AccountController : ControllerBase
         // Check if the model is valid
         if (ModelState.IsValid)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName);
+            var user = await userManager.FindByNameAsync(model.UserName);
             if (user != null)
             {
                 var result =
-                    await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                    await signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     var token = GenerateToken(model.UserName);
@@ -89,9 +82,9 @@ public class AccountController : ControllerBase
 
     private string? GenerateToken(string userName)
     {
-        var secret = _configuration["JwtConfig:Secret"];
-        var issuer = _configuration["JwtConfig:ValidIssuer"];
-        var audience = _configuration["JwtConfig:ValidAudiences"];
+        var secret = configuration["JwtConfig:Secret"];
+        var issuer = configuration["JwtConfig:ValidIssuer"];
+        var audience = configuration["JwtConfig:ValidAudiences"];
         if (secret is null || issuer is null || audience is null)
         {
             throw new ApplicationException("Jwt is not set in the configuration");

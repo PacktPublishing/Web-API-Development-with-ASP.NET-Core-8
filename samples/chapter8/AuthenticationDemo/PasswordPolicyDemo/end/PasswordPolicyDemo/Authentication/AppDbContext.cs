@@ -3,15 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PasswordPolicyDemo.Authentication;
 
-public class AppDbContext : IdentityDbContext<AppUser>
+public class AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration)
+    : IdentityDbContext<AppUser>(options)
 {
-    private readonly IConfiguration _configuration;
-
-    public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration configuration) : base(options)
-    {
-        _configuration = configuration;
-    }
-
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -20,6 +14,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
     }
 }
