@@ -2,14 +2,9 @@
 
 namespace GrpcDemo.Services;
 
-public class RandomNumbersService : RandomNumbers.RandomNumbersBase
+public class RandomNumbersService(ILogger<RandomNumbersService> logger) : RandomNumbers.RandomNumbersBase
 {
-    private readonly ILogger<RandomNumbersService> _logger;
-
-    public RandomNumbersService(ILogger<RandomNumbersService> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<RandomNumbersService> _logger = logger;
 
     public override async Task GetRandomNumbers(GetRandomNumbersRequest request,
         IServerStreamWriter<GetRandomNumbersResponse> responseStream, ServerCallContext context)
