@@ -7,20 +7,13 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace ClaimBasedAuthorizationDemo.IntegrationTests;
-public class AuthTests : IClassFixture<IntegrationTestsFixture>
+public class AuthTests(IntegrationTestsFixture fixture) : IClassFixture<IntegrationTestsFixture>
 {
-    private readonly IntegrationTestsFixture _fixture;
-
-    public AuthTests(IntegrationTestsFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task GetAnonymousWeatherForecast_ShouldReturnOk()
     {
         // Arrange
-        var client = _fixture.CreateClient();
+        var client = fixture.CreateClient();
 
         // Act
         var response = await client.GetAsync("/weatherforecast/anonymous");
@@ -43,7 +36,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetWeatherForecast_ShouldReturnUnauthorized_WhenNotAuthorized()
     {
         // Arrange
-        var client = _fixture.CreateClient();
+        var client = fixture.CreateClient();
         // Act
         var response = await client.GetAsync("/weatherforecast");
         // Assert
@@ -54,8 +47,8 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetWeatherForecast_ShouldReturnOk_WhenAuthorized()
     {
         // Arrange
-        var token = _fixture.GenerateToken("TestUser");
-        var client = _fixture.CreateClient();
+        var token = fixture.GenerateToken("TestUser");
+        var client = fixture.CreateClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         // Act
         var response = await client.GetAsync("/weatherforecast");
@@ -78,7 +71,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetDrivingLicense_ShouldReturnUnauthorized_WhenNotAuthorized()
     {
         // Arrange
-        var client = _fixture.CreateClient();
+        var client = fixture.CreateClient();
         // Act
         var response = await client.GetAsync("/weatherforecast/driving-license");
         // Assert
@@ -89,7 +82,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetDrivingLicense_ShouldReturnOk_WhenAuthorizedWithTestAuthHandler()
     {
         // Arrange
-        var client = _fixture.WithWebHostBuilder(builder =>
+        var client = fixture.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
             {
@@ -124,7 +117,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetDrivingLicense_ShouldReturnForbidden_WhenRequiredClaimsNotProvidedWithTestAuthHandler()
     {
         // Arrange
-        var client = _fixture.WithWebHostBuilder(builder =>
+        var client = fixture.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
             {
@@ -153,7 +146,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetCountry_ShouldReturnUnauthorized_WhenNotAuthorized()
     {
         // Arrange
-        var client = _fixture.CreateClient();
+        var client = fixture.CreateClient();
         // Act
         var response = await client.GetAsync("/weatherforecast/country");
         // Assert
@@ -164,7 +157,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     public async Task GetCountry_ShouldReturnOk_WhenAuthorizedWithTestAuthHandler()
     {
         // Arrange
-        var client = _fixture.CreateClientWithAuth("Test User", "New Zealand", "123456", "12345678");
+        var client = fixture.CreateClientWithAuth("Test User", "New Zealand", "123456", "12345678");
         // Act
         var response = await client.GetAsync("/weatherforecast/country");
         // Assert
@@ -178,7 +171,7 @@ public class AuthTests : IClassFixture<IntegrationTestsFixture>
     {
         // Arrange
         // As we don't provide the country claim, the request will be forbidden
-        var client = _fixture.CreateClientWithAuth("Test User", "", "123456", "12345678");
+        var client = fixture.CreateClientWithAuth("Test User", "", "123456", "12345678");
         // Act
         var response = await client.GetAsync("/weatherforecast/country");
         // Assert

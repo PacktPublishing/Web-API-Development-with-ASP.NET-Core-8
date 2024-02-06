@@ -4,20 +4,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using System.Text.Json;
 
 namespace InvoiceApp.IntegrationTests;
-public class WeatherForecastApiTests : IClassFixture<WebApplicationFactory<Program>>
+public class WeatherForecastApiTests(WebApplicationFactory<Program> factory)
+    : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly WebApplicationFactory<Program> _factory;
-
-    public WeatherForecastApiTests(WebApplicationFactory<Program> factory)
-    {
-        _factory = factory;
-    }
-
     [Fact]
     public async Task GetWeatherForecast_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync("/WeatherForecast");
         // Assert

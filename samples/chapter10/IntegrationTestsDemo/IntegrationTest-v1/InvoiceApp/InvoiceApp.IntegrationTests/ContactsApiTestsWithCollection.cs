@@ -9,20 +9,13 @@ using System.Text.Json;
 namespace InvoiceApp.IntegrationTests;
 
 [Collection("CustomIntegrationTests")]
-public class ContactsApiTestsWithCollection : IDisposable
+public class ContactsApiTestsWithCollection(CustomIntegrationTestsFixture factory) : IDisposable
 {
-    private readonly CustomIntegrationTestsFixture _factory;
-
-    public ContactsApiTestsWithCollection(CustomIntegrationTestsFixture factory)
-    {
-        _factory = factory;
-    }
-
     [Fact]
     public async Task GetContacts_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
 
         // Act
         var response = await client.GetAsync("/api/contact");
@@ -46,7 +39,7 @@ public class ContactsApiTestsWithCollection : IDisposable
     public async Task GetContactById_ReturnsSuccessAndCorrectContentType(string id)
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/contact/{id}");
         // Assert
@@ -67,7 +60,7 @@ public class ContactsApiTestsWithCollection : IDisposable
     public async Task GetContactById_ReturnsNotFound()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/contact/{Guid.NewGuid()}");
         // Assert
@@ -76,7 +69,7 @@ public class ContactsApiTestsWithCollection : IDisposable
 
     public void Dispose()
     {
-        var scope = _factory.Services.CreateScope();
+        var scope = factory.Services.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var db = scopedServices.GetRequiredService<InvoiceDbContext>();
         Utilities.Cleanup(db);

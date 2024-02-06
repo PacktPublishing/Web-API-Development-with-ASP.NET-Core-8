@@ -5,15 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace InvoiceApp.UnitTests;
-public class ContactControllerTests : IClassFixture<TestFixture>
+public class ContactControllerTests(TestFixture fixture) : IClassFixture<TestFixture>
 {
-    private readonly TestFixture _fixture;
-
-    public ContactControllerTests(TestFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task GetContacts_ShouldReturnContacts()
     {
@@ -21,7 +14,7 @@ public class ContactControllerTests : IClassFixture<TestFixture>
         var contactsRepositoryMock = new Mock<IContactRepository>();
         contactsRepositoryMock.Setup(x => x.GetContactsAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync((int page, int pageSize) =>
-                _fixture.Contacts
+                fixture.Contacts
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToList());

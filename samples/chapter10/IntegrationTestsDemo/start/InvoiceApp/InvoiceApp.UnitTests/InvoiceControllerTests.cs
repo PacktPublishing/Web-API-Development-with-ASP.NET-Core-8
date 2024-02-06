@@ -7,15 +7,8 @@ using Moq;
 
 namespace InvoiceApp.UnitTests;
 
-public class InvoiceControllerTests : IClassFixture<TestFixture>
+public class InvoiceControllerTests(TestFixture fixture) : IClassFixture<TestFixture>
 {
-    private readonly TestFixture _fixture;
-
-    public InvoiceControllerTests(TestFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact]
     public async Task GetInvoices_ShouldReturnInvoices()
     {
@@ -24,7 +17,7 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
 
         repositoryMock.Setup(x => x.GetInvoicesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<InvoiceStatus?>()))
             .ReturnsAsync((int page, int pageSize, InvoiceStatus? status) =>
-                _fixture.Invoices.Where(x => status == null || x.Status == status)
+                fixture.Invoices.Where(x => status == null || x.Status == status)
                     .OrderByDescending(x => x.InvoiceDate)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -52,7 +45,7 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         var repositoryMock = new Mock<IInvoiceRepository>();
         repositoryMock.Setup(x => x.GetInvoicesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<InvoiceStatus?>()))
             .ReturnsAsync((int page, int pageSize, InvoiceStatus? invoiceStatus) =>
-                _fixture.Invoices.Where(x => invoiceStatus == null || x.Status == invoiceStatus)
+                fixture.Invoices.Where(x => invoiceStatus == null || x.Status == invoiceStatus)
                     .OrderByDescending(x => x.InvoiceDate)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -78,7 +71,7 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         repositoryMock.Setup(x => x.CreateInvoiceAsync(It.IsAny<Invoice>()))
             .ReturnsAsync((Invoice invoice) =>
             {
-                _fixture.Invoices.Add(invoice);
+                fixture.Invoices.Add(invoice);
                 invoice.Id = Guid.NewGuid();
                 return invoice;
             });
@@ -88,7 +81,7 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         var invoice = new Invoice
         {
             DueDate = DateTimeOffset.Now.AddDays(30),
-            ContactId = _fixture.Contacts.First().Id,
+            ContactId = fixture.Contacts.First().Id,
             Status = InvoiceStatus.Draft,
             InvoiceDate = DateTimeOffset.Now,
             InvoiceItems = new List<InvoiceItem>
@@ -114,16 +107,16 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         var result = actionResult.Result as CreatedAtActionResult;
         Assert.NotNull(result);
         var returnResult = Assert.IsAssignableFrom<Invoice>(result.Value);
-        var invoiceCreated = _fixture.Invoices.FirstOrDefault(x => x.Id == returnResult.Id);
+        var invoiceCreated = fixture.Invoices.FirstOrDefault(x => x.Id == returnResult.Id);
 
         Assert.NotNull(invoiceCreated);
         Assert.Equal(InvoiceStatus.Draft, invoiceCreated.Status);
         Assert.Equal(500, invoiceCreated.Amount);
-        Assert.Equal(3, _fixture.Invoices.Count());
+        Assert.Equal(3, fixture.Invoices.Count());
         // You can add more assertions here
 
         // Clean up
-        _fixture.Invoices.Remove(invoiceCreated);
+        fixture.Invoices.Remove(invoiceCreated);
     }
 
     [Fact]
@@ -134,7 +127,7 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         repositoryMock.Setup(x => x.UpdateInvoiceAsync(It.IsAny<Invoice>()))
             .ReturnsAsync((Invoice invoice) =>
             {
-                var invoiceToUpdate = _fixture.Invoices.FirstOrDefault(x => x.Id == invoice.Id);
+                var invoiceToUpdate = fixture.Invoices.FirstOrDefault(x => x.Id == invoice.Id);
                 if (invoiceToUpdate != null)
                 {
                     invoiceToUpdate.Status = invoice.Status;
@@ -145,11 +138,11 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
                 return invoiceToUpdate;
             });
         repositoryMock.Setup(x => x.GetInvoiceAsync(It.IsAny<Guid>()))
-            .ReturnsAsync((Guid id) => _fixture.Invoices.FirstOrDefault(x => x.Id == id));
+            .ReturnsAsync((Guid id) => fixture.Invoices.FirstOrDefault(x => x.Id == id));
         var emailServiceMock = new Mock<IEmailService>();
         var controller = new InvoiceController(repositoryMock.Object, emailServiceMock.Object);
         // Act
-        var invoice = _fixture.Invoices.First();
+        var invoice = fixture.Invoices.First();
         invoice.Status = InvoiceStatus.Paid;
         invoice.Description = "Updated description";
         invoice.InvoiceItems.ForEach(x =>
@@ -161,11 +154,11 @@ public class InvoiceControllerTests : IClassFixture<TestFixture>
         await controller.UpdateInvoiceAsync(invoice.Id, invoice);
 
         // Assert
-        var invoiceUpdated = _fixture.Invoices.FirstOrDefault(x => x.Id == invoice.Id);
+        var invoiceUpdated = fixture.Invoices.FirstOrDefault(x => x.Id == invoice.Id);
         Assert.NotNull(invoiceUpdated);
         Assert.Equal(InvoiceStatus.Paid, invoiceUpdated.Status);
         Assert.Equal("Updated description", invoiceUpdated.Description);
         Assert.Equal(expectedAmount, invoiceUpdated.Amount);
-        Assert.Equal(2, _fixture.Invoices.Count());
+        Assert.Equal(2, fixture.Invoices.Count());
     }
 }

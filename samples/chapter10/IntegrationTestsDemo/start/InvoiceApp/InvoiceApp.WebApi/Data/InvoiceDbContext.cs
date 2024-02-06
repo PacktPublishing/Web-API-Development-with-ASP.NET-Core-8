@@ -3,14 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InvoiceApp.WebApi.Data;
 
-public class InvoiceDbContext : DbContext
+public class InvoiceDbContext(DbContextOptions<InvoiceDbContext> options, IConfiguration? configuration)
+    : DbContext(options)
 {
-    private readonly IConfiguration? _configuration;
-    public InvoiceDbContext(DbContextOptions<InvoiceDbContext> options, IConfiguration? configuration) : base(options)
-    {
-        _configuration = configuration;
-    }
-
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Contact> Contacts => Set<Contact>();
 
@@ -23,7 +18,7 @@ public class InvoiceDbContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer(_configuration?.GetConnectionString("DefaultConnection"));
+            optionsBuilder.UseSqlServer(configuration?.GetConnectionString("DefaultConnection"));
         }
     }
 }

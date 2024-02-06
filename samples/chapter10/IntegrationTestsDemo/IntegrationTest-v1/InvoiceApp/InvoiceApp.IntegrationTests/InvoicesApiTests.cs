@@ -10,20 +10,13 @@ using System.Text.Json;
 
 namespace InvoiceApp.IntegrationTests;
 
-public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
+public class InvoicesApiTests(CustomIntegrationTestsFixture factory) : IClassFixture<CustomIntegrationTestsFixture>
 {
-    private readonly CustomIntegrationTestsFixture _factory;
-
-    public InvoicesApiTests(CustomIntegrationTestsFixture factory)
-    {
-        _factory = factory;
-    }
-
     [Fact(Skip = "Skipped")]
     public async Task GetInvoices_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync("/api/invoice");
         // Assert
@@ -46,7 +39,7 @@ public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
     public async Task GetInvoiceById_ReturnsSuccessAndCorrectContentType(string id)
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/invoice/{id}");
         // Assert
@@ -67,7 +60,7 @@ public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
     public async Task GetInvoiceById_ReturnsNotFound()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/invoice/{Guid.NewGuid()}");
         // Assert
@@ -78,7 +71,7 @@ public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
     public async Task PostInvoice_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         var invoice = new Invoice
         {
             DueDate = DateTimeOffset.Now.AddDays(30),
@@ -123,7 +116,7 @@ public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
         invoiceResponse.ContactId.Should().Be(invoice.ContactId);
 
         // Clean up the database
-        var scope = _factory.Services.CreateScope();
+        var scope = factory.Services.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var db = scopedServices.GetRequiredService<InvoiceDbContext>();
         Utilities.Cleanup(db);
@@ -133,7 +126,7 @@ public class InvoicesApiTests : IClassFixture<CustomIntegrationTestsFixture>
     public async Task PostInvoice_WhenContactIdDoesNotExist_ReturnsBadRequest()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         var invoice = new Invoice
         {
             DueDate = DateTimeOffset.Now.AddDays(30),

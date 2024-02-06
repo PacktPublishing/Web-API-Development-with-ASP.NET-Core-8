@@ -14,20 +14,13 @@ using System.Text.Json;
 namespace InvoiceApp.IntegrationTests;
 
 [Collection("CustomIntegrationTests")]
-public class InvoicesApiTestsWithCollection : IDisposable
+public class InvoicesApiTestsWithCollection(CustomIntegrationTestsFixture factory) : IDisposable
 {
-    private readonly CustomIntegrationTestsFixture _factory;
-
-    public InvoicesApiTestsWithCollection(CustomIntegrationTestsFixture factory)
-    {
-        _factory = factory;
-    }
-
     [Fact]
     public async Task GetInvoices_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync("/api/invoice");
         // Assert
@@ -50,7 +43,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
     public async Task GetInvoiceById_ReturnsSuccessAndCorrectContentType(string id)
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/invoice/{id}");
         // Assert
@@ -71,7 +64,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
     public async Task GetInvoiceById_ReturnsNotFound()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         // Act
         var response = await client.GetAsync($"/api/invoice/{Guid.NewGuid()}");
         // Assert
@@ -82,7 +75,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
     public async Task PostInvoice_ReturnsSuccessAndCorrectContentType()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         var invoice = new Invoice
         {
             DueDate = DateTimeOffset.Now.AddDays(30),
@@ -131,7 +124,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
     public async Task PostInvoice_WhenContactIdDoesNotExist_ReturnsBadRequest()
     {
         // Arrange
-        var client = _factory.CreateClient();
+        var client = factory.CreateClient();
         var invoice = new Invoice
         {
             DueDate = DateTimeOffset.Now.AddDays(30),
@@ -172,7 +165,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
         var mockEmailSender = new Mock<IEmailSender>();
         mockEmailSender.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask).Verifiable();
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
             {
@@ -186,7 +179,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
         // Assert
         response.EnsureSuccessStatusCode(); // Status Code 200-299
         mockEmailSender.Verify(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        var scope = _factory.Services.CreateScope();
+        var scope = factory.Services.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var db = scopedServices.GetRequiredService<InvoiceDbContext>();
         var invoice = await db.Invoices.FindAsync(Guid.Parse(invoiceId));
@@ -200,7 +193,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
         var mockEmailSender = new Mock<IEmailSender>();
         mockEmailSender.Setup(x => x.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(Task.CompletedTask).Verifiable();
-        var client = _factory.WithWebHostBuilder(builder =>
+        var client = factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureTestServices(services =>
             {
@@ -219,7 +212,7 @@ public class InvoicesApiTestsWithCollection : IDisposable
     public void Dispose()
     {
         // Clean up the database
-        var scope = _factory.Services.CreateScope();
+        var scope = factory.Services.CreateScope();
         var scopedServices = scope.ServiceProvider;
         var db = scopedServices.GetRequiredService<InvoiceDbContext>();
         Utilities.Cleanup(db);
