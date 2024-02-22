@@ -586,7 +586,7 @@ So far, we have explored the Aspire starter application and learned how it works
 
 To learn more about .NET Aspire, you can check the official documentation at https://learn.microsoft.com/en-us/dotnet/aspire/. As this framework is new, the documentation may not be complete. If you can find any issues, you can report them at https://github.com/dotnet/aspire. 
 
-**Summary**
+## Summary
 
 In this chapter, we have introduced several popular frameworks that can help you build ASP.NET Core Web API applications. These frameworks are all open-source, well-supported, and have a large community. Let us summarize these frameworks. 
 
