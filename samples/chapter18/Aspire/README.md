@@ -1,8 +1,8 @@
 # 18 
-# Leveraging Open-Source Frameworks and Libraries
+# Leveraging Open-Source Frameworks
 
 
-So far, we have learned the fundamentals of ASP.NET Core Web API. ASP.NET Core is a very powerful framework that provides a comprehensive set of features to build Web APIs. We also introduced some practices and patterns that can help us to build better Web APIs. However, to implement a real-world web API, we still need some additional features, such as multi-tenancy, audit logging, and layered architecture. We can implement these features ourselves, but it will take a lot of time and effort. Fortunately, we do not need to reinvent the wheel. Many open-source frameworks and libraries can help us to build web API applications more efficiently. There is a Chinese saying: "To do a good job, one must first sharpen one's tools." We already have a good tool, ASP.NET Core, and now we will learn how to use other tools to build web APIs. 
+So far, we have learned the fundamentals of ASP.NET Core web API. ASP.NET Core is a very powerful framework that provides a comprehensive set of features to build web APIs. We also introduced some practices and patterns that can help us to build better web APIs. However, to implement a real-world web API, we still need some additional features, such as multi-tenancy, audit logging, and layered architecture. We can implement these features ourselves, but it will take a lot of time and effort. Fortunately, we do not need to reinvent the wheel. Many open-source frameworks and libraries can help us to build web API applications more efficiently. There is a Chinese saying: "To do a good job, one must first sharpen one's tools." We already have a good tool, ASP.NET Core, and now we will learn how to use other tools to build web APIs. 
 
 In this chapter, we will introduce some popular open-source frameworks and libraries that can help us build web APIs efficiently following the best practices. These frameworks include the following: 
 
@@ -16,7 +16,7 @@ In this chapter, we will introduce some popular open-source frameworks and libra
 
 * .NET Aspire 
 
-We will explore their features, advantages, and practical use cases within the context of ASP.NET Core Web API development. By the end of this chapter, you can choose whether you use these frameworks to start your web API project. Even if you do not use these frameworks, you can still learn some best practices from them. 
+We will explore their features, advantages, and practical use cases within the context of ASP.NET Core web API development. By the end of this chapter, you can choose whether you use these frameworks to start your web API project. Even if you do not use these frameworks, you can still learn some best practices from them. 
 
 ## How to choose a framework
 
@@ -162,7 +162,7 @@ If you feel that ABP Framework is too heavy, two popular repositories on GitHub 
 
 ## Clean architecture 
 
-As we discussed in Chapter 17, clean architecture is not a specific framework or library. However, some frameworks can be used as a starting point to implement clean architecture. In this section, we will introduce two popular frameworks that can help you implement clean architecture. 
+As we discussed in _Chapter 17_, clean architecture is not a specific framework or library. However, some frameworks can be used as a starting point to implement clean architecture. In this section, we will introduce two popular frameworks that can help you implement clean architecture. 
 
 If you search for clean architecture on GitHub, you will find many repositories that implement clean architecture. Two popular repositories are worth mentioning: 
 
@@ -398,7 +398,7 @@ At the time of writing this book, .NET Aspire is still in the early stages of de
 
 ![Fig_18.1](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_01.PNG)
 
-Figure 18.1: Installing the .NET Aspire workload 
+Figure 18.1 – Installing the .NET Aspire workload 
 
 Alternatively, if you use .NET CLI, you can install the .NET Aspire workload using the following command: 
 
@@ -446,7 +446,7 @@ To demonstrate the features of .NET Aspire, we will create a .NET Aspire Starter
 
 ![Fig:18.2](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_01.PNG)
 
-Figure 18.2: Creating a new .NET Aspire application using Visual Studio 2022 Preview 
+Figure 18.2 – Creating a new .NET Aspire application using Visual Studio 2022 Preview 
 
 4. Choose the .NET Aspire Starter Application template and click the Next button. Then you can follow the wizard to create a new .NET Aspire starter application. 
 
@@ -490,7 +490,7 @@ Figure 18.2: Creating a new .NET Aspire application using Visual Studio 2022 Pre
 
 ![Fig:18.3](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_03.PNG)
 
-Figure 18.3: The .NET Aspire dashboard 
+Figure 18.3 – The .NET Aspire dashboard 
 
 8. In the dashboard, you can find the links for the API and web applications. Click the web application link, and you will see a Blazor application that shows the weather forecast. 
 
@@ -498,19 +498,19 @@ Figure 18.3: The .NET Aspire dashboard
 
 ![Fig:18.4](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_04.PNG)
 
-Figure 18.4: The logs of the .NET Aspire application 
+Figure 18.4 – The logs of the .NET Aspire application 
 
 10. Click the Traces menu. Here you can check the traces of the applications: 
 
 ![Fig:18.5](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_05.PNG)
 
-Figure 18.5: The traces of the .NET Aspire application 
+Figure 18.5 – The traces of the .NET Aspire application 
 
 You can also check the metrics of the applications: 
 
 ![Fig:18.6](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_06.PNG)
 
-Figure 18.6: The metrics of the .NET Aspire application 
+Figure 18.6 – The metrics of the .NET Aspire application 
 
 The dashboard is designed to provide visibility into the logs, traces, and metrics of applications. This allows users to quickly identify and address any issues that may arise, as well as gain insights into the performance of their applications. 
 
