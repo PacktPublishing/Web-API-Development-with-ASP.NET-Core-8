@@ -2,7 +2,7 @@
 # Leveraging Open-Source Frameworks
 
 
-So far, we have learned the fundamentals of ASP.NET Core web API. ASP.NET Core is a very powerful framework that provides a comprehensive set of features to build web APIs. We also introduced some practices and patterns that can help us to build better web APIs. However, to implement a real-world web API, we still need some additional features, such as multi-tenancy, audit logging, and layered architecture. We can implement these features ourselves, but it will take a lot of time and effort. Fortunately, we do not need to reinvent the wheel. Many open-source frameworks and libraries can help us to build web API applications more efficiently. There is a Chinese saying: "To do a good job, one must first sharpen one's tools." We already have a good tool, ASP.NET Core, and now we will learn how to use other tools to build web APIs. 
+So far, we have learned the fundamentals of ASP.NET Core web API. ASP.NET Core is a very powerful framework that provides a comprehensive set of features to build web APIs. We also introduced some practices and patterns that can help us to build better web APIs. However, to implement a real-world web API, we still need some additional features, such as multi-tenancy, audit logging, and layered architecture. We can implement these features ourselves, but it will take a lot of time and effort. Fortunately, we do not need to reinvent the wheel. Many open-source frameworks and libraries can help us to build web API applications more efficiently. There is a Chinese saying: "_To do a good job, one must first sharpen one's tools._" We already have a good tool, ASP.NET Core, and now we will learn how to use other tools to build web APIs. 
 
 In this chapter, we will introduce some popular open-source frameworks and libraries that can help us build web APIs efficiently following the best practices. These frameworks include the following: 
 
@@ -20,7 +20,7 @@ We will explore their features, advantages, and practical use cases within the c
 
 ## How to choose a framework
 
-In the context of software development, a framework refers to a pre-established, reusable structure that provides a foundation for building applications. It is a set of libraries, components, conventions, and tools that guide developers in creating software within a specific architectural style or pattern. A framework normally focuses on the architecture and design of the application. It does not implement the business logic. However, it may provide some common features that are required by most applications. Technically, ASP.NET Core is also a framework. In this chapter, the term framework refers to a framework that is built on top of ASP.NET Core and provides additional features to build web APIs. They provide pre-built solutions and components, proven architectural patterns and best practices, and a collaborative community. Understanding and harnessing these frameworks can significantly enhance the productivity of developers. 
+In the context of software development, a framework refers to a pre-established, reusable structure that provides a foundation for building applications. It is a set of libraries, components, conventions, and tools that guide developers in creating software within a specific architectural style or pattern. A framework normally focuses on the architecture and design of the application. It does not implement the business logic. However, it may provide some common features that are required by most applications. Technically, ASP.NET Core is also a framework. In this chapter, the term _framework_ refers to a framework that is built on top of ASP.NET Core and provides additional features to build web APIs. They provide pre-built solutions and components, proven architectural patterns and best practices, and a collaborative community. Understanding and harnessing these frameworks can significantly enhance the productivity of developers. 
 
 There are so many different open-source frameworks and libraries that it can be overwhelming to choose the right one. Choosing the right framework is a critical decision for any project. It is not only a technical decision but also related to the business. The following are some factors that you should consider when choosing a framework: 
 
@@ -28,7 +28,7 @@ There are so many different open-source frameworks and libraries that it can be 
 
     **Scalability**: Consider how your project will scale in the future. Some factors that you should consider include the number of users, the number of requests per second, concurrent requests, data volume, multi-tenancy, and so on. Check how the framework handles increasing traffic and data volume. 
 
-    **Domain fit**: Consider what kind of application you are building. Some frameworks are designed for specific domains, such as e-commerce, Content Management System (CMS), or Enterprise Resource Planning (ERP). These frameworks may provide some domain-specific features that can boost your productivity. 
+    **Domain fit**: Consider what kind of application you are building. Some frameworks are designed for specific domains, such as e-commerce, **Content Management System** (**CMS**), or **Enterprise Resource Planning** (**ERP**). These frameworks may provide some domain-specific features that can boost your productivity. 
 
     **Extensibility**: Evaluate whether the framework can be extended to meet your future requirements and changes. A good framework should be flexible and extensible to adapt to evolving business requirements. 
 
@@ -70,7 +70,7 @@ Next, we will introduce the features of ABP Framework and how to use it to build
 
 **Overview**
 
-ABP Framework is a modular framework that provides a set of reusable components and services. It highly values domain-driven design (DDD). It provides a set of DDD building blocks, such as aggregate roots, entities, repositories, and domain services. It also provides a set of base classes and interfaces that can be used to implement these building blocks. Here are some key features of ABP Framework: 
+ABP Framework is a modular framework that provides a set of reusable components and services. It highly values **domain-driven design** (**DDD**). It provides a set of DDD building blocks, such as aggregate roots, entities, repositories, and domain services. It also provides a set of base classes and interfaces that can be used to implement these building blocks. Here are some key features of ABP Framework: 
 
 * **Microservice compatible**: ABP Framework is designed to build microservices. Each service is a separate application that can be deployed independently. They can use different databases. These services can communicate with each other using HTTP REST APIs or distributed events. APB Framework offers a built-in distributed event bus that enables services to integrate with RabbitMQ to publish and consume distributed events. 
 
@@ -78,7 +78,7 @@ ABP Framework is a modular framework that provides a set of reusable components 
 
 * **DDD**: ABP Framework can help developers implement DDD-based layered architectures. It provides a startup template that implements the DDD architecture. You can use the predefined base classes, services, and interfaces to develop your application following the DDD principles. It also provides a detailed documentation that explains how to implement DDD-based architectures. 
 
-* **Multi-tenancy support**: ABP Framework can help you build Software-as-a-Service (SaaS) applications. It provides multi-tenancy support out of the box. You can easily enable multi-tenancy in your application by adding a few lines of code. 
+* **Multi-tenancy support**: ABP Framework can help you build **Software-as-a-Service** (**SaaS**) applications. It provides multi-tenancy support out of the box. You can easily enable multi-tenancy in your application by adding a few lines of code. 
 
 * **Authentication and authorization**: ABP Framework offers a rich set of authentication and authorization features. It can integrate with external identity providers, such as IdentityServer and OpenIddict. It also provides a built-in role-based permission system. You can easily define your own roles and permissions to control access to your application. 
 
@@ -156,9 +156,9 @@ There are some challenges if you decide to use ABP Framework:
 
 * ABP Framework updates frequently. Sometimes it may break your application if you upgrade to the latest version. You need to pay attention to the release notes and upgrade guides when upgrading your application. 
 
-In summary, ABP Framework is a great option if you want to build web API microservices that follow DDD patterns and a layered architecture. However, it is important to note that the advantages of ABP Framework can also be seen as disadvantages. To make the most of this framework, it is necessary to adhere to its design. Therefore, you need to carefully weigh the pros and cons of ABP Framework before using it. If you need some features such as multi-tenancy and audit logging, ABP Framework could be a great solution as these features would take a lot of time to implement from scratch. On the other hand, for smaller projects, ABP Framework may be overkill. It is highly recommended that you read their free e-book Implementing Domain Driven Design, which is a practical guide to applying DDD principles using ABP Framework. You can find the e-book at https://abp.io/books/implementing-domain-driven-design. 
+In summary, ABP Framework is a great option if you want to build web API microservices that follow DDD patterns and a layered architecture. However, it is important to note that the advantages of ABP Framework can also be seen as disadvantages. To make the most of this framework, it is necessary to adhere to its design. Therefore, you need to carefully weigh the pros and cons of ABP Framework before using it. If you need some features such as multi-tenancy and audit logging, ABP Framework could be a great solution as these features would take a lot of time to implement from scratch. On the other hand, for smaller projects, ABP Framework may be overkill. It is highly recommended that you read their free e-book _Implementing Domain Driven Design_, which is a practical guide to applying DDD principles using ABP Framework. You can find the e-book at https://abp.io/books/implementing-domain-driven-design. 
 
-If you feel that ABP Framework is too heavy, two popular repositories on GitHub provide a starting point for clean architecture: Clean Architecture by Ardalis and Clean Architecture by Jason Taylor. We will introduce these two repositories in the next section. 
+If you feel that ABP Framework is too heavy, two popular repositories on GitHub provide a starting point for clean architecture: _Clean Architecture_ by Ardalis and _Clean Architecture_ by Jason Taylor. We will introduce these two repositories in the next section. 
 
 ## Clean architecture 
 
@@ -166,15 +166,15 @@ As we discussed in _Chapter 17_, clean architecture is not a specific framework 
 
 If you search for clean architecture on GitHub, you will find many repositories that implement clean architecture. Two popular repositories are worth mentioning: 
 
-* Clean Architecture by Ardalis 
+* _Clean Architecture_ by Ardalis 
 
-* Clean Architecture by Jason Taylor 
+* _Clean Architecture_ by Jason Taylor 
 
 Both repositories provide a great starting point for developers looking to implement clean architecture. Both are based on ASP.NET Core and share similar concepts. Let's take a closer look at each of them. 
 
 **Clean Architecture by Ardalis**
 
-Ardalis (Steve Smith) is a software architect with over 20 years of experience. He has been awarded Microsoft MVP for 20 years. He shares his experience on his blog: https://ardalis.com. You can find his courses on Pluralsight: https://www.pluralsight.com/authors/steve-smith. He created quite a few popular open-source projects on GitHub. By the way, he is also the author of the book Architecting Modern Web Applications with ASP.NET Core and Microsoft Azure, which we introduced in Chapter 17. 
+Ardalis (Steve Smith) is a software architect with over 20 years of experience. He has been awarded Microsoft MVP for 20 years. He shares his experience on his blog: https://ardalis.com. You can find his courses on Pluralsight: https://www.pluralsight.com/authors/steve-smith. He created quite a few popular open-source projects on GitHub. By the way, he is also the author of the book _Architecting Modern Web Applications with ASP.NET Core and Microsoft Azure_, which we introduced in _Chapter 17_. 
 
 Ardalis has created a highly popular repository on GitHub at https://github.com/ardalis/CleanArchitecture, providing a starting point for clean architecture with ASP.NET Core. As of the writing of this book, the repository has earned over 14,000 stars on GitHub. 
 
@@ -234,7 +234,7 @@ Similar to the template by Ardalis, this template also consists of four projects
 
 * **Infrastructure**: This project contains the implementation of the interfaces defined in the Application layer. These implementations include data access, external API integration, email service, file storage, and so on. It depends on the Domain and Application projects. 
 
-* **WebUI**: This is the presentation layer of the application. It is implemented as a Single Page Application (SPA) using Angular or React. 
+* **WebUI**: This is the presentation layer of the application. It is implemented as a **Single Page Application** (**SPA**) using Angular or React. 
 
 Similarly, it has a tests folder that contains unit tests and integration tests so you can start writing tests for your application. 
 
@@ -248,7 +248,7 @@ This template depends on the following popular NuGet packages:
 
 * EntityFrameworkCore**: EF Core is used to access the database. 
 
-* **xUnit, Moq, and Shouldly**: These packages are used to write tests. Shouldly is similar to FluentAssertions, which we introduced in Chapter 9. 
+* **xUnit, Moq, and Shouldly**: These packages are used to write tests. Shouldly is similar to FluentAssertions, which we introduced in _Chapter 9_. 
 
 These packages are mature and well maintained by the community, so you can use them with confidence. This template provides a Todo management application as an example. It also has a basic role-based authorization system. You can use this template as a starting point to build your own applications. 
 
@@ -340,7 +340,7 @@ To demonstrate the microservice architecture, the application has been split int
 
 There are some other components in this application, such as mobile BFF, Web App, Blazor App, and Mobile App. 
 
-The eShop application is a showcase of Microsoft technologies, so you can find many cool features from Microsoft in this application. The latest version of eShop also uses OpenAI to generate product and category descriptions. Microsoft has published a free e-book that explains how to architect and develop cloud-native .NET applications for Azure. We have referenced this book in Chapter 17. You can find the e-book .NET Microservices: Architecture for Containerized .NET Applications at https://learn.microsoft.com/en-us/dotnet/architecture/microservices/. It is highly recommended that you read this book to extend your knowledge of cloud-native applications. 
+The eShop application is a showcase of Microsoft technologies, so you can find many cool features from Microsoft in this application. The latest version of eShop also uses OpenAI to generate product and category descriptions. Microsoft has published a free e-book that explains how to architect and develop cloud-native .NET applications for Azure. We have referenced this book in _Chapter 17_. You can find the e-book _.NET Microservices: Architecture for Containerized .NET Applications_ at https://learn.microsoft.com/en-us/dotnet/architecture/microservices/. It is highly recommended that you read this book to extend your knowledge of cloud-native applications. 
 
 Besides eShop, Microsoft has also published a few other reference applications based on the eShop application: 
 
@@ -350,7 +350,7 @@ Besides eShop, Microsoft has also published a few other reference applications b
 
 * **eShopOnBlazor**: https://github.com/dotnet-architecture/eShopOnBlazor. This sample application uses Blazor to implement the frontend. It is useful for developers who want to migrate their existing ASP.NET Web Forms applications to Blazor. 
 
-* **eShopOnDapr**: https://github.com/dotnet-architecture/eShopOnDapr. This sample application is powered by Dapr. Dapr is an open-source, event-driven distributed application runtime that helps developers build resilient, stateless, and stateful microservice applications that run on the cloud and edge. Using Dapr significantly simplifies the original eShopOnContainers application. As Dapr is beyond the scope of this book, we will not discuss it further here. For more information about Dapr, please visit https://dapr.io. 
+* **eShopOnDapr**: https://github.com/dotnet-architecture/eShopOnDapr. This sample application is powered by Dapr. **Dapr** is an open-source, event-driven distributed application runtime that helps developers build resilient, stateless, and stateful microservice applications that run on the cloud and edge. Using Dapr significantly simplifies the original eShopOnContainers application. As Dapr is beyond the scope of this book, we will not discuss it further here. For more information about Dapr, please visit https://dapr.io. 
 
 The eShop sample application is an excellent example of how to construct a microservice-based application using ASP.NET Core and Azure. It provides many useful features and best practices that can be leveraged for learning purposes. However, Microsoft does not recommend using this application in a production environment. Therefore, it is best suited for educational purposes. 
 
@@ -430,9 +430,9 @@ Next, let us create a new .NET Aspire application and see how it works.
 
 There are two options for creating a new .NET Aspire application: 
 
-* .NET Aspire Application: This option creates the minimal .NET Aspire application that includes the orchestration and shared services only. You can add other services and frontend applications later. 
+* **.NET Aspire Application**: This option creates the minimal .NET Aspire application that includes the orchestration and shared services only. You can add other services and frontend applications later. 
 
-* .NET Aspire Starter Application: This option creates a full-stack application that includes the backend application and the frontend application. 
+* **.NET Aspire Starter Application**: This option creates a full-stack application that includes the backend application and the frontend application. 
 
 To demonstrate the features of .NET Aspire, we will create a .NET Aspire Starter Application: 
 
@@ -448,7 +448,7 @@ To demonstrate the features of .NET Aspire, we will create a .NET Aspire Starter
 
 Figure 18.2 – Creating a new .NET Aspire application using Visual Studio 2022 Preview 
 
-4. Choose the .NET Aspire Starter Application template and click the Next button. Then you can follow the wizard to create a new .NET Aspire starter application. 
+4. Choose the **.NET Aspire Starter Application** template and click the **Next** button. Then you can follow the wizard to create a new .NET Aspire starter application. 
 
 5. The starter application is pre-configured to quickly get you started with .NET Aspire. The created sample application includes the following projects: 
 
@@ -494,13 +494,13 @@ Figure 18.3 – The .NET Aspire dashboard
 
 8. In the dashboard, you can find the links for the API and web applications. Click the web application link, and you will see a Blazor application that shows the weather forecast. 
 
-9. Click the Logs menu. Here you can check the logs of the applications: 
+9. Click the **Logs** menu. Here you can check the logs of the applications: 
 
 ![Fig:18.4](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_04.PNG)
 
 Figure 18.4 – The logs of the .NET Aspire application 
 
-10. Click the Traces menu. Here you can check the traces of the applications: 
+10. Click the **Traces** menu. Here you can check the traces of the applications: 
 
 ![Fig:18.5](https://github.com/PacktPublishing/Web-API-Development-with-ASP.NET-Core-8/blob/main/samples/chapter18/Aspire/images_/B18971_18_05.PNG)
 
@@ -582,7 +582,7 @@ Next, let us open the Extensions.cs file in the AspireDemo.ServiceDefaults proje
 
 The AddServiceDefaults method is called in the Program.cs file in both the AspireDemo.ApiService and AspireDemo.Web projects. So, both projects can use the default configurations provided by the AspireDemo.ServiceDefaults project. That is why they can have logging, metrics, and tracing without any configuration. 
 
-So far, we have explored the Aspire starter application and learned how it works. .NET Aspire is still in the early stages of development. As Microsoft stated, “.NET Aspire is an opinionated, cloud ready stack for building observable, production ready, distributed applications.” It is believed that .NET Aspire will continue to evolve and become a powerful framework for building cloud-native applications. It is worth keeping an eye on this framework. 
+So far, we have explored the Aspire starter application and learned how it works. .NET Aspire is still in the early stages of development. As Microsoft stated, “_.NET Aspire is an opinionated, cloud ready stack for building observable, production ready, distributed applications._” It is believed that .NET Aspire will continue to evolve and become a powerful framework for building cloud-native applications. It is worth keeping an eye on this framework. 
 
 To learn more about .NET Aspire, you can check the official documentation at https://learn.microsoft.com/en-us/dotnet/aspire/. As this framework is new, the documentation may not be complete. If you can find any issues, you can report them at https://github.com/dotnet/aspire. 
 
@@ -602,4 +602,4 @@ eShop is a reference application that demonstrates how to build a microservice-b
 
 It is important to note that these frameworks are not mutually exclusive. You can combine them to build your applications. For example, you can use .NET Aspire to orchestrate your microservices and use ABP Framework or Clean Architecture templates to build your microservices. The possibilities are endless. You can choose the frameworks that best suit your needs. 
 
-It is time to wrap up this book. We hope you have enjoyed reading this book and have gained valuable insights into ASP.NET Core. ASP.NET Core is a great framework for building web APIs. However, the more we learn, the more we realize that there is still much to discover. We hope this book has provided you with a solid foundation and inspired you to continue learning. As the Chinese proverb goes, "The sea of learning knows no bounds; only those who are willing to learn will be able to reach the other shore." We wish you all the best in your future endeavors and continued success in your learning journey. Happy coding! 
+It is time to wrap up this book. We hope you have enjoyed reading this book and have gained valuable insights into ASP.NET Core. ASP.NET Core is a great framework for building web APIs. However, the more we learn, the more we realize that there is still much to discover. We hope this book has provided you with a solid foundation and inspired you to continue learning. As the Chinese proverb goes, "_The sea of learning knows no bounds; only those who are willing to learn will be able to reach the other shore._" We wish you all the best in your future endeavors and continued success in your learning journey. Happy coding! 
