@@ -70,7 +70,7 @@ Next, we will introduce the features of ABP Framework and how to use it to build
 
 **Overview**
 
-ABP Framework is a modular framework that provides a set of reusable components and services. It highly values **domain-driven design** (**DDD**). It provides a set of DDD building blocks, such as aggregate roots, entities, repositories, and domain services. It also provides a set of base classes and interfaces that can be used to implement these building blocks. Here are some key features of ABP Framework: 
+ABP Framework is a modular framework that provides a set of reusable components and services. It highly values **DDD**. It provides a set of DDD building blocks, such as aggregate roots, entities, repositories, and domain services. It also provides a set of base classes and interfaces that can be used to implement these building blocks. Here are some key features of ABP Framework: 
 
 * **Microservice compatible**: ABP Framework is designed to build microservices. Each service is a separate application that can be deployed independently. They can use different databases. These services can communicate with each other using HTTP REST APIs or distributed events. APB Framework offers a built-in distributed event bus that enables services to integrate with RabbitMQ to publish and consume distributed events. 
 
