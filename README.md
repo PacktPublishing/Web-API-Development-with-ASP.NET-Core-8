@@ -55,9 +55,9 @@ With the following software and hardware list you can run all code files present
 
 
 ## Related products <Other books you may enjoy>
-* Architecting ASP.NET Core Applications [[Packt]](https://www.packtpub.com/product/architecting-aspnet-core-applications-third-edition/9781805123385) [[Amazon]](https://www.amazon.in/dp/1805123386)
+* Architecting ASP.NET Core Applications [[Packt]](https://www.packtpub.com/product/architecting-aspnet-core-applications-third-edition/9781805123385) [[Amazon]](https://www.amazon.com/dp/1805123386)
 
-* ASP.NET 8 Best Practices [[Packt]](https://www.packtpub.com/product/aspnet-8-best-practices/9781837632121) [[Amazon]](https://www.amazon.in/dp/183763212X)
+* ASP.NET 8 Best Practices [[Packt]](https://www.packtpub.com/product/aspnet-8-best-practices/9781837632121) [[Amazon]](https://www.amazon.com/dp/183763212X)
 
 ## Get to Know the Author
 **Xiaodi Yan**
