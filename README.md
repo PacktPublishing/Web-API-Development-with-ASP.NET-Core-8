@@ -61,6 +61,7 @@ code .`
 _it should be_
 `dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi code`
+The two commands should be placed in two separate lines.
 
 ## Related products <Other books you may enjoy>
 * Architecting ASP.NET Core Applications [[Packt]](https://www.packtpub.com/product/architecting-aspnet-core-applications-third-edition/9781805123385) [[Amazon]](https://www.amazon.com/dp/1805123386)
