@@ -53,6 +53,11 @@ With the following software and hardware list you can run all code files present
 | 1-18     | Azure, Azure DevOps, GitHub              | Windows, macOS, or Linux      |
 | 1-18     |Seq, Prometheus, Grafana, Jaeger          | Windows, Docker/Linux         |
 
+### Errata
+* Page 39, Code snippet says `dotnet new webapi -n MyFirstApi -controllers
+cd MyFirstApi
+code .` _it should be_ `dotnet new webapi -n MyFirstApi -controllers
+cd MyFirstApi code`
 
 ## Related products <Other books you may enjoy>
 * Architecting ASP.NET Core Applications [[Packt]](https://www.packtpub.com/product/architecting-aspnet-core-applications-third-edition/9781805123385) [[Amazon]](https://www.amazon.com/dp/1805123386)
