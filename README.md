@@ -54,9 +54,12 @@ With the following software and hardware list you can run all code files present
 | 1-18     |Seq, Prometheus, Grafana, Jaeger          | Windows, Docker/Linux         |
 
 ### Errata
-* Page 39, Command for creating a web API project says `dotnet new webapi -n MyFirstApi -controllers
+* Page 39, Command for creating a web API project says
+`dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi
-code .` _it should be_ `dotnet new webapi -n MyFirstApi -controllers
+code .`
+_it should be_
+`dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi code`
 
 ## Related products <Other books you may enjoy>
