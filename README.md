@@ -54,6 +54,7 @@ With the following software and hardware list you can run all code files present
 | 1-18     |Seq, Prometheus, Grafana, Jaeger          | Windows, Docker/Linux         |
 
 ### Errata
+* Page 20, *Some other popular frameworks include XML-RPC, **SOAP PRC**, JSON-RPC, and gRPC.*  _it should be_  *Some other popular frameworks include XML-RPC, **SOAP RPC**, JSON-RPC, and gRPC.*
 * Page 39, Command for creating a web API project says
 `dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi
@@ -62,6 +63,7 @@ _it should be_
 `dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi code`
 The two commands should be placed in two separate lines.
+* Page 68, Second code snippet says `var posts = await _postService.GetAllPosts();` _it should be_ `var posts = await _postsService.GetAllPosts();`
 
 ## Related products <Other books you may enjoy>
 * Architecting ASP.NET Core Applications [[Packt]](https://www.packtpub.com/product/architecting-aspnet-core-applications-third-edition/9781805123385) [[Amazon]](https://www.amazon.com/dp/1805123386)
