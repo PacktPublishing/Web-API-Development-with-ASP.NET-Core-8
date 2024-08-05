@@ -54,7 +54,7 @@ With the following software and hardware list you can run all code files present
 | 1-18     |Seq, Prometheus, Grafana, Jaeger          | Windows, Docker/Linux         |
 
 ### Errata
-* Page 20, *Some other popular frameworks include XML-RPC, **SOAP PRC**, JSON-RPC, and gRPC.*  _it should be_  *Some other popular frameworks include XML-RPC, **SOAP RPC**, JSON-RPC, and gRPC.*
+* Page 20, "Some other popular frameworks include XML-RPC, **SOAP PRC**, JSON-RPC, and gRPC."  _it should be_  "Some other popular frameworks include XML-RPC, **SOAP RPC**, JSON-RPC, and gRPC."
 * Page 39, Command for creating a web API project says
 `dotnet new webapi -n MyFirstApi -controllers
 cd MyFirstApi
